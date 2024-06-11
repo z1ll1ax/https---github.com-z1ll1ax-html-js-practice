@@ -1,0 +1,33 @@
+#main-frame {
+    margin: 40px 40px 0px 40px;
+    display: flex;
+}
+#main-search {
+    flex: 1;
+    font-size: 24px;
+}
+#search-button {
+    width: 60px;
+}
+#search-button img{
+    width: 40px;
+}
+#list{
+    margin: 10px 0 0 0;
+    font-size: 20px;
+    list-style-type: none;
+    list-style-position: inside;
+    margin-right: 30px;
+}
+#list li{
+    background-color: rgb(140, 140, 207);
+    margin: 0 10px 0 0;
+    padding: 10px;
+    border: solid 5px black;
+    border-radius: 15px;
+}
+#list p{
+    margin: 0 10px 0 0;
+    font-size: 18px;
+    text-align: right;
+}
