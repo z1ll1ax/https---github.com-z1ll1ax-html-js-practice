@@ -8,26 +8,28 @@
 }
 #search-button {
     width: 60px;
+    margin-left: 20px;
 }
 #search-button img{
     width: 40px;
 }
 #list{
-    margin: 10px 0 0 0;
+    margin: 40px 0 0 0;
     font-size: 20px;
     list-style-type: none;
     list-style-position: inside;
     margin-right: 30px;
 }
 #list li{
-    background-color: rgb(140, 140, 207);
-    margin: 0 10px 0 0;
+    background-color: rgb(215, 215, 245);
+    margin: 10px 20px 0 10px;
     padding: 10px;
     border: solid 5px black;
     border-radius: 15px;
+    font-family: Arial;
 }
 #list p{
-    margin: 0 10px 0 0;
+    margin: 10px 10px 0 0;
     font-size: 18px;
     text-align: right;
 }
