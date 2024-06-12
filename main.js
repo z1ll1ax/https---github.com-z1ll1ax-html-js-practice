@@ -1,6 +1,6 @@
 let searchResults;
 
-function FindBook()
+async function searchButton()
 {
     searchResults = document.getElementById("list");
     const searchInput = document.getElementById("main-search");
@@ -8,25 +8,19 @@ function FindBook()
     if (searchItem.trim() === ""){
        searchResults.innerHTML = ""; 
     }
-    const apiUrlBooks = `https://openlibrary.org/search.json?q=${searchItem}&fields=*,availability&limit=10`;
-    
-    fetch(apiUrlBooks)
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log(data);
-        const results = data.docs;
-        ShowResults(results);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    }); 
+    const results = await getBooks(searchItem);
+    showResults(results.docs);
 }
-function ShowResults(results){
+async function getBooks(searchItem)
+{
+    const apiUrlBooks = `https://openlibrary.org/search.json?q=${searchItem}&fields=*,availability&limit=10`;
+    const response = await fetch(apiUrlBooks);
+    const results = await response.json();
+    console.log(results);
+    return results;
+}
+function showResults(results)
+{
     searchResults = document.getElementById("list");
     searchResults.innerHTML='';
     results.forEach(result => {
