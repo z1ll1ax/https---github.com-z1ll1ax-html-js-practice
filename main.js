@@ -1,25 +1,30 @@
 let searchResults;
-
+let books = [];
 async function handleClickSearch()
 {
     searchResults = document.getElementById("list");
     const loader = document.getElementById("loader");
     const searchInput = document.getElementById("main-search");
+    const amountOfBooks = document.getElementById("input-number-found");
     emptyPage();
     const searchItem = searchInput.value;
     if (searchItem.trim() === ""){
        searchResults.innerHTML = ""; 
     }
     loader.style.display = 'block';
-    const results = await getBooks(searchItem);
+    if(amountOfBooks.value <= 0){
+        amountOfBooks.value = 10;
+    } 
+    const results = await getBooks(searchItem, amountOfBooks.value);
     loader.style.display = 'none';
     showResults(results.docs);
 }
-async function getBooks(searchItem)
+async function getBooks(searchItem, numberResults)
 {
-    const apiUrlBooks = `https://openlibrary.org/search.json?q=${searchItem}&fields=*,availability&limit=10`;
+    const apiUrlBooks = `https://openlibrary.org/search.json?q=${searchItem}&fields=title,author_name&limit=${numberResults}`;
     const response = await fetch(apiUrlBooks);
     const results = await response.json();
+    console.log(results);
     return results;
 }
 function showResults(results)

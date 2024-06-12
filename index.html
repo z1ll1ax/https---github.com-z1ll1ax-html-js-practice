@@ -8,11 +8,34 @@
         <div id="main-frame">
             <input id="main-search" type="text" placeholder="Search">
             <button id="remove-button" onclick="handleClickRemove()">
-                <img src="closeIcon.png">
+                <img src="imgs/closeIcon.png">
             </button>
             <button id="search-button" onclick="handleClickSearch()">
-                <img src="searchIcon.png">
+                <img src="imgs/searchIcon.png">
             </button>
+        </div>
+        <div id="sort">
+            <div id="number-found">
+                <p>Show results: </p>
+                <input value="10" id="input-number-found">
+            </div>
+            <div id="sort-menu">
+                <p>Sort By</p>
+                <div id="sort-buttons">
+                    <button id="author-sort">
+                        by Author
+                     </button>
+                     <button id="title-sort">
+                         by Title
+                     </button>
+                     <button id="up-sort">
+                         <img src="imgs/up.png">
+                     </button>
+                     <button id="down-sort">
+                         <img src="imgs/down.png">
+                     </button>
+                </div>
+            </div>
         </div>
         <div id="loader">Loading...</div>
         <div id="no-book" style="display: none;">There is no such book</div>
