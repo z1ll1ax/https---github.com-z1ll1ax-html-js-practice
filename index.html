@@ -6,7 +6,7 @@
     </head>
     <body>
         <div id="main-frame">
-            <input id="main-search" type="text" placeholder="Search">
+            <input id="main-input" type="text" placeholder="Search">
             <button id="remove-button" onclick="handleClickRemove()">
                 <img src="imgs/closeIcon.png">
             </button>
@@ -20,25 +20,24 @@
                 <input value="10" id="input-number-found">
             </div>
             <div id="sort-menu">
-                <p>Sort By</p>
                 <div id="sort-buttons">
-                    <button id="author-sort">
-                        by Author
-                     </button>
-                     <button id="title-sort">
-                         by Title
-                     </button>
-                     <button id="up-sort">
-                         <img src="imgs/up.png">
-                     </button>
-                     <button id="down-sort">
-                         <img src="imgs/down.png">
-                     </button>
+                    <button id="up-down-sort" onclick="flipArray()">
+                        <img src="imgs/up.png">
+                        <img src="imgs/down.png">
+                    </button>
                 </div>
+                <div class="dropdown">
+                    <button class="dropbtn" onclick="handleSort()">Sort by Title</button>
+                    <div class="dropdown-content">
+                      <button href="#">Sort by Author</button>
+                      <button href="#">Sort by Title</button>
+                    </div>
+                </div>   
             </div>
         </div>
         <div id="loader">Loading...</div>
         <div id="no-book" style="display: none;">There is no such book</div>
-        <ul id="list"></ul>
+        <ul id="list">
+        </ul>
     </body>
 </html>

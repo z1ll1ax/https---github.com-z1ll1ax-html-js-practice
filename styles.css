@@ -18,9 +18,10 @@ button:active{
     margin: 40px 40px 0px 40px;
     display: flex;
 }
-#main-search {
+#main-input {
     flex: 1;
     font-size: 24px;
+    border-color: black;
 }
 #search-button, #remove-button{
     width: 60px;
@@ -51,10 +52,16 @@ button:active{
     border-radius: 15px;
     font-family: Arial;
 }
-#list p{
+#list .authorBook{
     margin: 10px 10px 0 0;
     font-size: 18px;
     text-align: right;
+}
+#list .titleBook{
+    margin: 10px 10px 0 0;
+    font-size: 18px;
+    text-align: left;
+    display: inline-block;
 }
 #sort{
     margin: 20px;
@@ -71,7 +78,7 @@ button:active{
     display: inline-block;
 }
 #number-found{
-    flex: 2;
+    flex: 1;
     margin: 0 30px 0 30px;
     justify-content: center;
     align-items: center;
@@ -81,34 +88,70 @@ button:active{
 }
 #sort-menu{
     flex: 3;
-    margin: 0 15px 0 0;
+    margin: 0 0 0 0;
     justify-content: center;
     align-items: center;
     display: flex;
 }
-#sort-menu p{
-    flex: 100px;
-    display: inline-block;
-    text-align: end;
-    margin-right: 20px;
-}
 #number-found p{
     margin: 0;
 }
-#sort-buttons{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 10px;
-    row-gap: 10px;
-}
 
-#author-sort, #title-sort, #up-sort, #down-sort{
+#up-down-sort{
+    margin: 0;
     height: 30px;
     width: 90px;
     border-radius: 15px;
     border: none;
     background-color: rgb(221, 237, 255);
 }
-#author-sort img, #title-sort img, #up-sort img, #down-sort img{
+#up-down-sort img{
     height: 30px;
+}
+
+.dropbtn {
+    margin: 0 15px 0 15px;
+    height: 60px;
+    width: 200px;
+    border-radius: 15px;
+    background-color: rgb(221, 237, 255);
+    color: black;
+    padding: 16px;
+    font-size: 16px;
+    font-family: Arial;
+    border: none;
+  }
+  
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    justify-content: center;
+    background-color: #f1f1f1;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+  .dropdown-content button {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    width: 160px;
+    display: block;
+  }
+  
+  .dropdown-content button:hover {
+    background-color: #ddd;
+}
+  
+  .dropdown:hover .dropdown-content {
+    display: block;
+}
+  
+  .dropdown:hover .dropbtn {
+    background-color: rgb(221, 237, 255);
 }

@@ -1,23 +1,36 @@
 let searchResults;
-let books = [];
+let sortOption = 'Title';
+let results;
+document.addEventListener('keydown', function(event) {
+    if (event.key === "Escape") {
+        handleClickRemove();
+    }
+    if (event.key === "Enter"){
+        handleClickSearch();
+    }
+});
 async function handleClickSearch()
 {
     searchResults = document.getElementById("list");
     const loader = document.getElementById("loader");
-    const searchInput = document.getElementById("main-search");
+    const searchInput = document.getElementById("main-input");
     const amountOfBooks = document.getElementById("input-number-found");
     emptyPage();
     const searchItem = searchInput.value;
     if (searchItem.trim() === ""){
        searchResults.innerHTML = ""; 
+       searchInput.style.borderColor = 'red';
     }
-    loader.style.display = 'block';
-    if(amountOfBooks.value <= 0){
-        amountOfBooks.value = 10;
-    } 
-    const results = await getBooks(searchItem, amountOfBooks.value);
-    loader.style.display = 'none';
-    showResults(results.docs);
+    else{
+        searchInput.style.borderColor = 'black';
+        loader.style.display = 'block';
+        if(amountOfBooks.value <= 0){
+            amountOfBooks.value = 10;
+        } 
+        results = await getBooks(searchItem, amountOfBooks.value);
+        loader.style.display = 'none';
+        showResults(results.docs);
+    }
 }
 async function getBooks(searchItem, numberResults)
 {
@@ -38,16 +51,22 @@ function showResults(results)
     else{
         results.forEach(result => {
             const listBook = document.createElement("li");
+            const title = document.createElement("p");
             const author = document.createElement("p");
-            listBook.textContent = '"' + result.title + '"';
+            listBook.className = 'newBornBook';
+            title.textContent = '\"' + result.title + '\"';
+            title.className = 'titleBook';
             author.textContent = 'by ' + result.author_name;
+            author.className = 'authorBook';
+            listBook.appendChild(title);
             listBook.appendChild(author);
             searchResults.appendChild(listBook);
         });
     }
 }
+
 function handleClickRemove(){
-    const searchInput = document.getElementById("main-search");
+    const searchInput = document.getElementById("main-input");
     searchInput.value = '';
 }
 function emptyPage(){
@@ -55,4 +74,34 @@ function emptyPage(){
     const noBook = document.getElementById("no-book");
     searchResults.innerHTML='';
     noBook.style.display = 'none';
+}
+function getArray(){
+    books.length = 0;
+    objects = document.getElementsByClassName('newBornBook');
+    for (object of objects){
+        _title = object.getElementsByClassName('titleBook')[0].innerHTML;
+        _author = object.getElementsByClassName('authorBook')[0].innerHTML;
+        books.push({title: _title, author: _author});
+    }
+    console.log(books);
+}
+function handleSort(){
+    switch(sortOption){
+        case 'Author':
+            results.docs.sort((a, b) => a.author_name.localeCompare(b.author_name));
+            break;
+        case 'Title':
+            results.docs.sort((a, b) => a.title.localeCompare(b.title));
+            break;
+    }
+    showResults(results.docs);
+}
+function handleSortOption(){
+
+}
+function flipArray(){
+    if (results.docs.length != 0){
+        results.docs.reverse();
+        showResults(results.docs);
+    }
 }
