@@ -5,6 +5,7 @@ async function handleClickSearch()
     searchResults = document.getElementById("list");
     const loader = document.getElementById("loader");
     const searchInput = document.getElementById("main-search");
+    emptyPage();
     const searchItem = searchInput.value;
     if (searchItem.trim() === ""){
        searchResults.innerHTML = ""; 
@@ -19,13 +20,12 @@ async function getBooks(searchItem)
     const apiUrlBooks = `https://openlibrary.org/search.json?q=${searchItem}&fields=*,availability&limit=10`;
     const response = await fetch(apiUrlBooks);
     const results = await response.json();
-    console.log(results);
     return results;
 }
 function showResults(results)
 {
     searchResults = document.getElementById("list");
-    searchResults.innerHTML='';
+    emptyPage();
     if (results.length === 0){
         const noBook = document.getElementById("no-book");
         noBook.style.display = 'block';
@@ -44,4 +44,10 @@ function showResults(results)
 function handleClickRemove(){
     const searchInput = document.getElementById("main-search");
     searchInput.value = '';
+}
+function emptyPage(){
+    searchResults = document.getElementById("list");
+    const noBook = document.getElementById("no-book");
+    searchResults.innerHTML='';
+    noBook.style.display = 'none';
 }
