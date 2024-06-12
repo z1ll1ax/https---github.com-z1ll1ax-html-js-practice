@@ -1,14 +1,17 @@
 let searchResults;
 
-async function searchButton()
+async function handleClickSearch()
 {
     searchResults = document.getElementById("list");
+    const loader = document.getElementById("loader");
     const searchInput = document.getElementById("main-search");
     const searchItem = searchInput.value;
     if (searchItem.trim() === ""){
        searchResults.innerHTML = ""; 
     }
+    loader.style.display = 'block';
     const results = await getBooks(searchItem);
+    loader.style.display = 'none';
     showResults(results.docs);
 }
 async function getBooks(searchItem)

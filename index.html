@@ -7,14 +7,11 @@
     <body>
         <div id="main-frame">
             <input id="main-search" type="text" placeholder="Search">
-            <button id="search-button" onclick="searchButton()">
+            <button id="search-button" onclick="handleClickSearch()">
                 <img src="searchIcon.png">
             </button>
         </div>
-        <ul id="list">
-            <li>Title
-                <p>Author</p>
-            </li>
-        </ul>
+        <div id="loader">Loading...</div>
+        <ul id="list"></ul>
     </body>
 </html>

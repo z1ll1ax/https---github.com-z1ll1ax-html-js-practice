@@ -13,6 +13,13 @@
 #search-button img{
     width: 40px;
 }
+#loader{
+    text-align: center;
+    font-size: 32px;
+    font-family: Arial;
+    margin-top: 40px;
+    display: none;
+}
 #list{
     margin: 40px 0 0 0;
     font-size: 20px;
