@@ -7,11 +7,15 @@
     <body>
         <div id="main-frame">
             <input id="main-search" type="text" placeholder="Search">
+            <button id="remove-button" onclick="handleClickRemove()">
+                <img src="closeIcon.png">
+            </button>
             <button id="search-button" onclick="handleClickSearch()">
                 <img src="searchIcon.png">
             </button>
         </div>
         <div id="loader">Loading...</div>
+        <div id="no-book" style="display: none;">There is no such book</div>
         <ul id="list"></ul>
     </body>
 </html>

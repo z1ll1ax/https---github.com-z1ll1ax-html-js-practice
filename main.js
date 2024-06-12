@@ -26,12 +26,22 @@ function showResults(results)
 {
     searchResults = document.getElementById("list");
     searchResults.innerHTML='';
-    results.forEach(result => {
-        const listBook = document.createElement("li");
-        const author = document.createElement("p");
-        listBook.textContent = '"' + result.title + '"';
-        author.textContent = 'by ' + result.author_name;
-        listBook.appendChild(author);
-        searchResults.appendChild(listBook);
-    });
+    if (results.length === 0){
+        const noBook = document.getElementById("no-book");
+        noBook.style.display = 'block';
+    }
+    else{
+        results.forEach(result => {
+            const listBook = document.createElement("li");
+            const author = document.createElement("p");
+            listBook.textContent = '"' + result.title + '"';
+            author.textContent = 'by ' + result.author_name;
+            listBook.appendChild(author);
+            searchResults.appendChild(listBook);
+        });
+    }
+}
+function handleClickRemove(){
+    const searchInput = document.getElementById("main-search");
+    searchInput.value = '';
 }
