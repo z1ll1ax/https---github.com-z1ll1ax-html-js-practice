@@ -166,17 +166,15 @@ button:active{
     white-space: nowrap;
     width: 1px;
 }
-.pagination{
-    margin: 30px;
+#page-menu{
     display: flex;
+    margin: 30px;
     align-items: center;
     justify-content: center;
 }
-.pagination button {
-    margin: 1px;
-    padding: 5px 10px 5px 10px;
-}
-.pagination button.active {
-    background-color: #007bff;
-    color: white;
+#page-menu button{
+    width: 50px;
+    display: none;
+    height: 50px;
+    margin: 5px;
 }

@@ -16,49 +16,38 @@ document.addEventListener('keydown', function(event) {
 async function menu(menuOption){
     switch(menuOption){
         case 'search':
+            currentPage = 0;
             books = await handleClickSearch();
             showResults(books, currentPage);
-            createPageButtons(books);
-            updateActiveButtonStates();
             break;
         case 'sort':
             showResults(handleSort(books), currentPage);
             break;
         case 'flip':
             showResults(flipArray(books), currentPage);
-            break;   
+            break; 
+        case 'nextPage':
+            nextPage();
+            break;
+        case 'prevPage':
+            prevPage();
+            break;  
+    }
+}
+function nextPage(){
+    if (books.length != 0 && currentPage != Math.floor(books.length/itemsPerPage) - 1) {
+        showResults(books, ++currentPage);
+    }
+}
+function prevPage(){
+    if (books.length != 0 && currentPage != 0) {
+        showResults(books, --currentPage);
     }
 }
 
-function createPageButtons(books) {
-    const totalPages = Math.ceil(books.length / itemsPerPage);
-    const paginationContainer = document.getElementById('pageButtons');
-    paginationContainer.innerHTML = '';
-    paginationContainer.classList.add('pagination');
-    for (let i = 0; i < totalPages; i++) {
-        const pageButton = document.createElement('button');
-        pageButton.textContent = i + 1;
-        pageButton.addEventListener('click', () => {
-            currentPage = i;
-            showResults(books, currentPage);
-            updateActiveButtonStates();
-        });
-        paginationContainer.appendChild(pageButton);
-    }
-}
-function updateActiveButtonStates() {
-    const pageButtons = document.querySelectorAll('.pagination button');
-    pageButtons.forEach((button, index) => {
-      if (index === currentPage) {
-        button.classList.add('active');
-      } 
-      else {
-        button.classList.remove('active');
-      }
-    });
-}
 function showResults(results, currentPage)
 {
+    const pageB = document.getElementById('page-number');
     const searchResults = document.getElementById("list");
     emptyPage();
     if (results.length === 0){
@@ -84,8 +73,8 @@ function showResults(results, currentPage)
             listBook.appendChild(author);
             searchResults.appendChild(listBook);
         });
-        updateActiveButtonStates();
     }
+    pageB.innerText = currentPage + 1;
 }
 
 async function handleClickSearch()
@@ -96,6 +85,7 @@ async function handleClickSearch()
     const amountOfBooks = document.getElementById("input-number-found");
     emptyPage();
     const searchItem = searchInput.value;
+    currentPage = 0;
     if (searchItem.trim() === ""){
        searchResults.innerHTML = ""; 
        searchInput.style.borderColor = 'red';
@@ -117,7 +107,6 @@ async function getBooks(searchItem, numberResults)
     const apiUrlBooks = `https://openlibrary.org/search.json?q=${searchItem}&fields=title,author_name&limit=${numberResults}`;
     const response = await fetch(apiUrlBooks);
     const results = await response.json();
-    console.log(results);
     return results;
 }
 function handleClickRemove(){
@@ -129,6 +118,9 @@ function emptyPage(){
     const noBook = document.getElementById("no-book");
     searchResults.innerHTML='';
     noBook.style.display = 'none';
+    let prevNextB = document.getElementsByClassName('move-page');
+    const pageB = document.getElementById('page-number');
+    prevNextB[0].style.display = prevNextB[1].style.display = pageB.style.display = 'inline';
 }
 function handleSort(results){
     switch(sortOption){

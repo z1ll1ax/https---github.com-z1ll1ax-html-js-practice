@@ -38,6 +38,10 @@
         <div id="loader">Loading...</div>
         <div id="no-book" style="display: none;">There is no such book</div>
         <ul id="list"></ul>
-        <div id="pageButtons"></div>
+        <div id="page-menu">
+            <button class="move-page" onclick="menu('prevPage')">Prev</button>
+            <button id="page-number">1</button>
+            <button class="move-page" onclick="menu('nextPage')">Next</button>
+        </div>
     </body>
 </html>
