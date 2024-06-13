@@ -65,6 +65,7 @@ button:active{
 }
 #sort{
     margin: 20px;
+    padding: 0 20px 0 20px;
     height: 100px;
     background-color: rgb(189, 187, 254);
     display: flex;
@@ -109,7 +110,7 @@ button:active{
     height: 30px;
 }
 
-.dropbtn {
+#dropbtn {
     margin: 0 15px 0 15px;
     height: 60px;
     width: 130px;

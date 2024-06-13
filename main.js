@@ -63,6 +63,7 @@ function showResults(results)
             searchResults.appendChild(listBook);
         });
     }
+    
 }
 
 function handleClickRemove(){
@@ -75,20 +76,10 @@ function emptyPage(){
     searchResults.innerHTML='';
     noBook.style.display = 'none';
 }
-function getArray(){
-    books.length = 0;
-    objects = document.getElementsByClassName('newBornBook');
-    for (object of objects){
-        _title = object.getElementsByClassName('titleBook')[0].innerHTML;
-        _author = object.getElementsByClassName('authorBook')[0].innerHTML;
-        books.push({title: _title, author: _author});
-    }
-    console.log(books);
-}
 function handleSort(){
     switch(sortOption){
         case 'Author':
-            results.docs.sort((a, b) => a.author_name.localeCompare(b.author_name));
+            results.docs.sort((a, b) => a.author_name[0].localeCompare(b.author_name[0]));
             break;
         case 'Title':
             results.docs.sort((a, b) => a.title.localeCompare(b.title));
@@ -96,11 +87,13 @@ function handleSort(){
     }
     showResults(results.docs);
 }
-function handleSortOption(){
-
+function handleSortOption(option){
+    let sortButton = document.getElementById('dropbtn');
+    sortButton.innerHTML = `Sort by ${option}`;
+    sortOption = option;
 }
 function flipArray(){
-    if (results.docs.length != 0){
+    if (results){
         results.docs.reverse();
         showResults(results.docs);
     }

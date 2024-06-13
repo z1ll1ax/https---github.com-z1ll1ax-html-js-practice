@@ -27,10 +27,10 @@
                     </button>
                 </div>
                 <div class="dropdown">
-                    <button class="dropbtn" onclick="handleSort()">Sort by Title</button>
+                    <button id="dropbtn" onclick="handleSort()">Sort by Title</button>
                     <div class="dropdown-content">
-                      <button href="#">Sort by Author</button>
-                      <button href="#">Sort by Title</button>
+                      <button href="#" onclick="handleSortOption('Author')">Sort by Author</button>
+                      <button href="#" onclick="handleSortOption('Title')">Sort by Title</button>
                     </div>
                 </div>   
             </div>
