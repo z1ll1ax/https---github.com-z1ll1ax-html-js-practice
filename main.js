@@ -2,7 +2,8 @@ let books;
 let sortOption = 'Title';
 const itemsPerPage = 10;
 let currentPage = 0;
-
+let url = new URL(window.location.href);
+let input = document.querySelector('q');
 document.addEventListener('keydown', function(event) {
     if (event.key === "Escape") {
         handleClickRemove();
@@ -11,9 +12,28 @@ document.addEventListener('keydown', function(event) {
         handleClickSearch();
     }
 });
+
+async function menu(menuOption){
+    switch(menuOption){
+        case 'search':
+            books = await handleClickSearch();
+            showResults(books, currentPage);
+            createPageButtons(books);
+            updateActiveButtonStates();
+            break;
+        case 'sort':
+            showResults(handleSort(books), currentPage);
+            break;
+        case 'flip':
+            showResults(flipArray(books), currentPage);
+            break;   
+    }
+}
+
 function createPageButtons(books) {
     const totalPages = Math.ceil(books.length / itemsPerPage);
     const paginationContainer = document.getElementById('pageButtons');
+    paginationContainer.innerHTML = '';
     paginationContainer.classList.add('pagination');
     for (let i = 0; i < totalPages; i++) {
         const pageButton = document.createElement('button');
@@ -67,22 +87,6 @@ function showResults(results, currentPage)
         updateActiveButtonStates();
     }
 }
-async function menu(menuOption){
-    switch(menuOption){
-        case 'search':
-            books = await handleClickSearch();
-            showResults(books, currentPage);
-            createPageButtons(books);
-            updateActiveButtonStates();
-            break;
-        case 'sort':
-            showResults(handleSort(books), currentPage);
-            break;
-        case 'flip':
-            showResults(flipArray(books), currentPage);
-            break;   
-    }
-}
 
 async function handleClickSearch()
 {
@@ -116,7 +120,6 @@ async function getBooks(searchItem, numberResults)
     console.log(results);
     return results;
 }
-
 function handleClickRemove(){
     const searchInput = document.getElementById("main-input");
     searchInput.value = '';
