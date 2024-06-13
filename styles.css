@@ -174,7 +174,6 @@ button:active{
 }
 #page-menu button{
     width: 50px;
-    display: none;
     height: 50px;
     margin: 5px;
 }

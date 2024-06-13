@@ -1,9 +1,12 @@
 let books;
-let sortOption = 'Title';
 const itemsPerPage = 10;
 let currentPage = 0;
-let url = new URL(window.location.href);
-let input = document.querySelector('q');
+let sortOption = 'title';
+let asc = true;
+const urlParams = new URLSearchParams(window.location.search);
+document.addEventListener('DOMContentLoaded', function() {
+    loadScreen();
+});
 document.addEventListener('keydown', function(event) {
     if (event.key === "Escape") {
         handleClickRemove();
@@ -12,19 +15,20 @@ document.addEventListener('keydown', function(event) {
         handleClickSearch();
     }
 });
-
 async function menu(menuOption){
     switch(menuOption){
         case 'search':
-            currentPage = 0;
             books = await handleClickSearch();
+            console.log(1);
             showResults(books, currentPage);
             break;
         case 'sort':
-            showResults(handleSort(books), currentPage);
+            books = await(handleSort(books));
+            showResults(books, currentPage);
             break;
         case 'flip':
-            showResults(flipArray(books), currentPage);
+            books = flipArray(books);
+            showResults(books, currentPage);
             break; 
         case 'nextPage':
             nextPage();
@@ -34,13 +38,43 @@ async function menu(menuOption){
             break;  
     }
 }
+async function loadScreen(){
+    const q = urlParams.get('q');
+    if (q){
+        let inp = document.getElementById('main-input');
+        inp.value = q;
+        await menu('search');
+    }
+    const page = urlParams.get('page');
+    if (page){
+        currentPage = page - 1;
+    }
+    const sortBy = urlParams.get('sortBy');
+    if (sortBy){
+        console.log(2);
+        console.log(sortBy);
+        sortOption = sortBy.toLowerCase();
+        handleSortOption(sortOption);
+        await menu('sort');
+    }
+    const order = urlParams.get('order');
+    if (order){
+        if (order == 'asc'){
+            asc = true;
+        }
+        else{
+            asc = false;
+            menu('flip');
+        }
+    } 
+}
 function nextPage(){
-    if (books.length != 0 && currentPage != Math.floor(books.length/itemsPerPage) - 1) {
+    if (books && currentPage != Math.floor(books.length/itemsPerPage) - 1) {
         showResults(books, ++currentPage);
     }
 }
 function prevPage(){
-    if (books.length != 0 && currentPage != 0) {
+    if (books && currentPage != 0) {
         showResults(books, --currentPage);
     }
 }
@@ -85,13 +119,13 @@ async function handleClickSearch()
     const amountOfBooks = document.getElementById("input-number-found");
     emptyPage();
     const searchItem = searchInput.value;
-    currentPage = 0;
     if (searchItem.trim() === ""){
        searchResults.innerHTML = ""; 
        searchInput.style.borderColor = 'red';
        return [];
     }
     else{
+        urlParams.values()[1] = searchInput.value;
         searchInput.style.borderColor = 'black';
         loader.style.display = 'block';
         if(amountOfBooks.value <= 0){
@@ -118,17 +152,14 @@ function emptyPage(){
     const noBook = document.getElementById("no-book");
     searchResults.innerHTML='';
     noBook.style.display = 'none';
-    let prevNextB = document.getElementsByClassName('move-page');
-    const pageB = document.getElementById('page-number');
-    prevNextB[0].style.display = prevNextB[1].style.display = pageB.style.display = 'inline';
 }
 function handleSort(results){
     switch(sortOption){
-        case 'Author':
+        case 'author':
             results.sort((a, b) => a.author_name[0].localeCompare(b.author_name[0]));
             break;
         default:
-        case 'Title':
+        case 'title':
             results.sort((a, b) => a.title.localeCompare(b.title));
             break;
     }
@@ -141,6 +172,7 @@ function handleSortOption(option){
 }
 function flipArray(results){
     if (results){
+        asc = !asc;
         return results.reverse();
     }
 }
