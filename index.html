@@ -10,24 +10,24 @@
             <button id="remove-button" onclick="handleClickRemove()">
                 <img src="imgs/closeIcon.png">
             </button>
-            <button id="search-button" onclick="handleClickSearch()">
+            <button id="search-button" onclick="menu('search')">
                 <img src="imgs/searchIcon.png">
             </button>
         </div>
         <div id="sort">
             <div id="number-found">
                 <p>Show results: </p>
-                <input value="10" id="input-number-found">
+                <input value="60" id="input-number-found">
             </div>
             <div id="sort-menu">
                 <div id="sort-buttons">
-                    <button id="up-down-sort" onclick="flipArray()">
+                    <button id="up-down-sort" onclick="menu('flip')">
                         <img src="imgs/up.png">
                         <img src="imgs/down.png">
                     </button>
                 </div>
                 <div class="dropdown">
-                    <button id="dropbtn" onclick="handleSort()">Sort by Title</button>
+                    <button id="dropbtn" onclick="menu('sort')">Sort by Title</button>
                     <div class="dropdown-content">
                       <button href="#" onclick="handleSortOption('Author')">Sort by Author</button>
                       <button href="#" onclick="handleSortOption('Title')">Sort by Title</button>
@@ -37,7 +37,7 @@
         </div>
         <div id="loader">Loading...</div>
         <div id="no-book" style="display: none;">There is no such book</div>
-        <ul id="list">
-        </ul>
+        <ul id="list"></ul>
+        <div id="pageButtons"></div>
     </body>
 </html>

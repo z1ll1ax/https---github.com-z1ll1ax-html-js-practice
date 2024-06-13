@@ -90,7 +90,7 @@ button:active{
 #sort-menu{
     flex: 3;
     margin: 0 0 0 0;
-    justify-content: center;
+    justify-content: right;
     align-items: center;
     display: flex;
 }
@@ -155,4 +155,22 @@ button:active{
   
   .dropdown:hover .dropbtn {
     background-color: rgb(221, 237, 255);
+}
+
+#hidden {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+}
+.pagination{
+}
+.pagination button{
+}
+.pagination button.active {
+    background-color: #007bff;
+    color: white;
 }

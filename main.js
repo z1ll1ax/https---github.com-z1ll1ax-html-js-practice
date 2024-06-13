@@ -1,6 +1,8 @@
-let searchResults;
+let books;
 let sortOption = 'Title';
-let results;
+const itemsPerPage = 10;
+let currentPage = 0;
+
 document.addEventListener('keydown', function(event) {
     if (event.key === "Escape") {
         handleClickRemove();
@@ -9,9 +11,82 @@ document.addEventListener('keydown', function(event) {
         handleClickSearch();
     }
 });
+function createPageButtons(books) {
+    const totalPages = Math.ceil(books.length / itemsPerPage);
+    const paginationContainer = document.getElementById('pageButtons');
+    paginationContainer.classList.add('pagination');
+    for (let i = 0; i < totalPages; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i + 1;
+        pageButton.addEventListener('click', () => {
+            currentPage = i;
+            showResults(books, currentPage);
+            updateActiveButtonStates();
+        });
+        paginationContainer.appendChild(pageButton);
+    }
+}
+function updateActiveButtonStates() {
+    const pageButtons = document.querySelectorAll('.pagination button');
+    pageButtons.forEach((button, index) => {
+      if (index === currentPage) {
+        button.classList.add('active');
+      } 
+      else {
+        button.classList.remove('active');
+      }
+    });
+}
+function showResults(results, currentPage)
+{
+    const searchResults = document.getElementById("list");
+    emptyPage();
+    if (results.length === 0){
+        const noBook = document.getElementById("no-book");
+        noBook.style.display = 'block';
+    }
+    else{
+        const startIndex = currentPage * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        results.forEach((result, index) => {
+            const listBook = document.createElement("li");
+            const title = document.createElement("p");
+            const author = document.createElement("p");
+            if (index < startIndex || index >= endIndex){
+                listBook.id = 'hidden';
+            }
+            listBook.className = 'newBornBook';
+            title.textContent = '\"' + result.title + '\"';
+            title.className = 'titleBook';
+            author.textContent = 'by ' + result.author_name;
+            author.className = 'authorBook';
+            listBook.appendChild(title);
+            listBook.appendChild(author);
+            searchResults.appendChild(listBook);
+        });
+        updateActiveButtonStates();
+    }
+}
+async function menu(menuOption){
+    switch(menuOption){
+        case 'search':
+            books = await handleClickSearch();
+            showResults(books, currentPage);
+            createPageButtons(books);
+            updateActiveButtonStates();
+            break;
+        case 'sort':
+            showResults(handleSort(books), currentPage);
+            break;
+        case 'flip':
+            showResults(flipArray(books), currentPage);
+            break;   
+    }
+}
+
 async function handleClickSearch()
 {
-    searchResults = document.getElementById("list");
+    const searchResults = document.getElementById("list");
     const loader = document.getElementById("loader");
     const searchInput = document.getElementById("main-input");
     const amountOfBooks = document.getElementById("input-number-found");
@@ -20,6 +95,7 @@ async function handleClickSearch()
     if (searchItem.trim() === ""){
        searchResults.innerHTML = ""; 
        searchInput.style.borderColor = 'red';
+       return [];
     }
     else{
         searchInput.style.borderColor = 'black';
@@ -29,7 +105,7 @@ async function handleClickSearch()
         } 
         results = await getBooks(searchItem, amountOfBooks.value);
         loader.style.display = 'none';
-        showResults(results.docs);
+        return results.docs;
     }
 }
 async function getBooks(searchItem, numberResults)
@@ -40,61 +116,36 @@ async function getBooks(searchItem, numberResults)
     console.log(results);
     return results;
 }
-function showResults(results)
-{
-    searchResults = document.getElementById("list");
-    emptyPage();
-    if (results.length === 0){
-        const noBook = document.getElementById("no-book");
-        noBook.style.display = 'block';
-    }
-    else{
-        results.forEach(result => {
-            const listBook = document.createElement("li");
-            const title = document.createElement("p");
-            const author = document.createElement("p");
-            listBook.className = 'newBornBook';
-            title.textContent = '\"' + result.title + '\"';
-            title.className = 'titleBook';
-            author.textContent = 'by ' + result.author_name;
-            author.className = 'authorBook';
-            listBook.appendChild(title);
-            listBook.appendChild(author);
-            searchResults.appendChild(listBook);
-        });
-    }
-    
-}
 
 function handleClickRemove(){
     const searchInput = document.getElementById("main-input");
     searchInput.value = '';
 }
 function emptyPage(){
-    searchResults = document.getElementById("list");
+    const searchResults = document.getElementById("list");
     const noBook = document.getElementById("no-book");
     searchResults.innerHTML='';
     noBook.style.display = 'none';
 }
-function handleSort(){
+function handleSort(results){
     switch(sortOption){
         case 'Author':
-            results.docs.sort((a, b) => a.author_name[0].localeCompare(b.author_name[0]));
+            results.sort((a, b) => a.author_name[0].localeCompare(b.author_name[0]));
             break;
+        default:
         case 'Title':
-            results.docs.sort((a, b) => a.title.localeCompare(b.title));
+            results.sort((a, b) => a.title.localeCompare(b.title));
             break;
     }
-    showResults(results.docs);
+    return results;
 }
 function handleSortOption(option){
     let sortButton = document.getElementById('dropbtn');
     sortButton.innerHTML = `Sort by ${option}`;
     sortOption = option;
 }
-function flipArray(){
+function flipArray(results){
     if (results){
-        results.docs.reverse();
-        showResults(results.docs);
+        return results.reverse();
     }
 }
