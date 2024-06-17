@@ -40,10 +40,21 @@
         <div id="no-book" style="display: none;">There is no such book</div>
         <ul id="list"></ul>
         <div id="page-menu">
-            <button class="move-page" onclick="menu('prevPage')">Prev</button>
-            <button id="page-number">1</button>
-            <button class="move-page" onclick="menu('nextPage')">Next</button>
+            <button class="move-page" id="hidden" onclick="menu('prevPage')">Prev</button>
+            <div id="page-buttons">
+                <button class="page-number" id="hidden" onclick="pageTravelTo(0)">1</button>
+                <button class="page-number" id="hidden" onclick="pageTravelTo(1)">2</button>
+                <button class="page-number" id="hidden" onclick="pageTravelTo(2)">3</button>
+                <button class="page-number" id="hidden" onclick="pageTravelTo(3)">4</button>
+                <button class="page-number" id="hidden" onclick="pageTravelTo(4)">5</button>  
+                <button class="page-number" id="hidden" onclick="pageTravelTo(5)">6</button>  
+                <button class="page-number" id="hidden" onclick="pageTravelTo(6)">7</button>    
+                <button class="page-number" id="hidden" onclick="pageTravelTo(7)">8</button>
+                <button class="page-number" id="hidden" onclick="pageTravelTo(8)">10</button>
+            </div>
+            <button class="move-page" id="hidden" onclick="menu('nextPage')">Next</button>
         </div>
+        <p class="pages-amount"></p>
     </body>
     <script src="main.js"></script>
 </html>

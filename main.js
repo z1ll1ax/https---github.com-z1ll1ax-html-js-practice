@@ -21,15 +21,15 @@ async function menu(menuOption){
     switch(menuOption){
         case 'search':
             books = await handleClickSearch();
-            showResults(books, currentPage);
+            showResults(books);
             break;
         case 'sort':
             books = await(handleSort(books));
-            showResults(books, currentPage);
+            showResults(books);
             break;
         case 'flip':
             books = flipArray(books);
-            showResults(books, currentPage);
+            showResults(books);
             break; 
         case 'nextPage':
             nextPage(books);
@@ -40,21 +40,15 @@ async function menu(menuOption){
     }
 }
 async function loadScreen(){
-    let shown = urlParams.get('shown');
+    let shown = urlParams.get('total');
     if (shown && !isNaN(shown)){
         if (parseInt(shown) < 1){
             shown = 60;
-            urlParams.set('shown', shown);
+            urlParams.set('total', shown);
             history.pushState({}, '', `${path}?${urlParams}`);
         } 
         const amountOfBooks = document.getElementById("input-number-found");
         amountOfBooks.value = itemsShown = shown;
-    }
-    let q = urlParams.get('q');
-    if (q){
-        let inp = document.getElementById('main-input');
-        inp.value = q;
-        await menu('search');
     }
     let page = urlParams.get('p');
     if (page && !isNaN(page)){
@@ -64,6 +58,16 @@ async function loadScreen(){
             history.pushState({}, '', `${path}?${urlParams}`);
         } 
         else currentPage = page - 1;
+    }
+    else {
+        urlParams.set('p', 1);
+        history.pushState({}, '', `${path}?${urlParams}`);
+    }
+    let q = urlParams.get('q');
+    if (q){
+        let inp = document.getElementById('main-input');
+        inp.value = q;
+        await menu('search');
     }
     let sortBy = urlParams.get('sortBy');
     if (sortBy){
@@ -85,28 +89,34 @@ async function loadScreen(){
     } 
 }
 function nextPage(){
-    if (books && currentPage != Math.floor(books.length/itemsPerPage) - 1) {
-        showResults(books, ++currentPage);
+    if (books && currentPage != Math.ceil(books.length/itemsPerPage) - 1) {
+        ++currentPage
+        showResults(books);
         urlParams.set('p', currentPage + 1);
         history.pushState({}, '', `${path}?${urlParams}`);
     }
 }
 function prevPage(){
     if (books && currentPage != 0) {
-        showResults(books, --currentPage);
+        --currentPage;
+        showResults(books);
         urlParams.set('p', currentPage + 1);
         history.pushState({}, '', `${path}?${urlParams}`);
     }
 }
 
-function showResults(books, currentPage)
+function showResults(books)
 {
-    const pageB = document.getElementById('page-number');
     const searchResults = document.getElementById("list");
+    const prevNextButtons = document.getElementsByClassName("move-page");
+    const pagesAmount = document.getElementsByClassName("pages-amount");
     emptyPage();
+    prevNextButtons[0].id = prevNextButtons[1].id = '';
     if (books.length === 0){
         const noBook = document.getElementById("no-book");
         noBook.style.display = 'block';
+        prevNextButtons[0].id = prevNextButtons[1].id = pagesAmount[0].id = 'hidden';
+        pagination();
     }
     else{
         const startIndex = currentPage * itemsPerPage;
@@ -127,8 +137,13 @@ function showResults(books, currentPage)
             listBook.appendChild(author);
             searchResults.appendChild(listBook);
         });
+        pagination();
+        if (currentPage === 0) prevNextButtons[0].id = 'disabled';
+        let amount = Math.ceil(books.length/itemsPerPage);
+        if (currentPage === amount - 1) prevNextButtons[1].id = 'disabled';
+        pagesAmount[0].id = '';
+        pagesAmount[0].innerText = `${startIndex}-${endIndex} of ${books.length} total`;
     }
-    pageB.innerText = currentPage + 1;
 }
 
 async function handleClickSearch()
@@ -153,7 +168,7 @@ async function handleClickSearch()
         results = await getBooks(searchItem, amountOfBooks.value);
         loader.style.display = 'none';
         urlParams.set('q', searchItem);
-        urlParams.set('shown', amountOfBooks.value);
+        urlParams.set('total', amountOfBooks.value);
         history.pushState({}, '', `${path}?${urlParams}`);
         return results.docs;
     }
@@ -207,4 +222,74 @@ function flipArray(){
         history.pushState({}, '', `${path}?${urlParams}`);
         return books.reverse();
     }
+}
+function pagination(){
+    const amountOfButtons = 9;
+    const buttons = document.getElementsByClassName('page-number');
+    for (const button of buttons){
+        button.id = '';
+    }
+    let amount = Math.ceil(books.length/itemsPerPage);
+    console.log(amount);
+    switch(true){
+        case (amount === 1):
+            buttons[0].innerText = 1;
+            for (let i = 1; i < amountOfButtons; i++){
+                buttons[i].id = 'hidden';
+            }
+            break;
+        case (amount >= 1 && amount <= amountOfButtons):
+            for (let i = 0; i < amountOfButtons; i++){
+                if (i > amount - 1){
+                    buttons[i].id = 'hidden';
+                }
+                else{
+                    buttons[i].innerText = i + 1;
+                }
+            }
+            break;
+        case (amount > amountOfButtons):
+            buttons[0].innerText = 1;
+            buttons[amountOfButtons - 1].innerText = amount;
+            if (currentPage < 4){
+                for (let i = 1; i < 7; i++){
+                    buttons[i].innerText = i + 1;
+                }
+                buttons[amountOfButtons - 2].innerText = '...';
+                buttons[amountOfButtons - 2].id = 'disabled';
+            }
+            else if (currentPage > amount - 6){
+                for (let i = 2; i < 8; i++){
+                    buttons[i].innerText = amount + i - 8;
+                }
+                buttons[1].innerText = '...';
+                buttons[1].id = 'disabled';
+            }
+            else {
+                for (let i = 2; i < 7; i++){
+                    buttons[i].innerText = currentPage - 3 + i;
+                }    
+                buttons[1].innerText = buttons[amountOfButtons - 2].innerText = '...';
+                buttons[1].id = buttons[amountOfButtons - 2].id = 'disabled';
+            }
+            break;
+        default:
+            for (let i = 0; i < amountOfButtons; i++){
+                buttons[i].id = 'hidden';
+            }
+            return;
+    }
+    for (button of buttons){
+        if (button.innerText == currentPage + 1){
+            button.id = 'active';
+            break;
+        }
+    }
+}
+function pageTravelTo(id){
+    const buttons = document.getElementsByClassName('page-number');
+    currentPage = parseInt(buttons[id].innerText) - 1;
+    urlParams.set('p', currentPage + 1);
+    history.pushState({}, '', `${path}?${urlParams}`);
+    showResults(books);
 }

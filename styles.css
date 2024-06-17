@@ -183,12 +183,32 @@ button:active{
 }
 #page-menu{
     display: flex;
-    margin: 30px;
+    margin-top: 30px;
     align-items: center;
     justify-content: center;
 }
-#page-menu button{
+.page-number-border, .page-number{
+    flex: 1;
+}
+
+.move-page{
     width: 50px;
-    height: 50px;
-    margin: 5px;
+    height: 30px;
+    margin: 20px;
+}
+.page-number{
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 20px;
+    pointer-events: all;
+}
+#active{
+    background-color: rgb(182, 211, 244);   
+}
+#disabled{
+    pointer-events: none;
+}
+.pages-amount{
+    text-align: center;
 }
