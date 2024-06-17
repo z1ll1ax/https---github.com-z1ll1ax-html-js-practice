@@ -3,6 +3,7 @@ const itemsPerPage = 10;
 let currentPage = 0;
 let sortOption = 'title';
 let asc = true;
+const path = window.location.href.split('?')[0];
 const urlParams = new URLSearchParams(window.location.search);
 document.addEventListener('DOMContentLoaded', function() {
     loadScreen();
@@ -19,7 +20,6 @@ async function menu(menuOption){
     switch(menuOption){
         case 'search':
             books = await handleClickSearch();
-            console.log(1);
             showResults(books, currentPage);
             break;
         case 'sort':
@@ -31,10 +31,10 @@ async function menu(menuOption){
             showResults(books, currentPage);
             break; 
         case 'nextPage':
-            nextPage();
+            nextPage(books);
             break;
         case 'prevPage':
-            prevPage();
+            prevPage(books);
             break;  
     }
 }
@@ -45,7 +45,7 @@ async function loadScreen(){
         inp.value = q;
         await menu('search');
     }
-    const page = urlParams.get('page');
+    const page = urlParams.get('p');
     if (page){
         currentPage = page - 1;
     }
@@ -71,27 +71,31 @@ async function loadScreen(){
 function nextPage(){
     if (books && currentPage != Math.floor(books.length/itemsPerPage) - 1) {
         showResults(books, ++currentPage);
+        urlParams.set('p', currentPage + 1);
+        history.pushState({}, '', `${path}?${urlParams}`);
     }
 }
 function prevPage(){
     if (books && currentPage != 0) {
         showResults(books, --currentPage);
+        urlParams.set('p', currentPage + 1);
+        history.pushState({}, '', `${path}?${urlParams}`);
     }
 }
 
-function showResults(results, currentPage)
+function showResults(books, currentPage)
 {
     const pageB = document.getElementById('page-number');
     const searchResults = document.getElementById("list");
     emptyPage();
-    if (results.length === 0){
+    if (books.length === 0){
         const noBook = document.getElementById("no-book");
         noBook.style.display = 'block';
     }
     else{
         const startIndex = currentPage * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
-        results.forEach((result, index) => {
+        books.forEach((result, index) => {
             const listBook = document.createElement("li");
             const title = document.createElement("p");
             const author = document.createElement("p");
@@ -125,7 +129,6 @@ async function handleClickSearch()
        return [];
     }
     else{
-        urlParams.values()[1] = searchInput.value;
         searchInput.style.borderColor = 'black';
         loader.style.display = 'block';
         if(amountOfBooks.value <= 0){
@@ -133,6 +136,8 @@ async function handleClickSearch()
         } 
         results = await getBooks(searchItem, amountOfBooks.value);
         loader.style.display = 'none';
+        urlParams.set('q', searchItem);
+        history.pushState({}, '', `${path}?${urlParams}`);
         return results.docs;
     }
 }
@@ -153,26 +158,31 @@ function emptyPage(){
     searchResults.innerHTML='';
     noBook.style.display = 'none';
 }
-function handleSort(results){
+function handleSort(books){
     switch(sortOption){
         case 'author':
-            results.sort((a, b) => a.author_name[0].localeCompare(b.author_name[0]));
+            books.sort((a, b) => a.author_name[0].localeCompare(b.author_name[0]));
             break;
         default:
         case 'title':
-            results.sort((a, b) => a.title.localeCompare(b.title));
+            books.sort((a, b) => a.title.localeCompare(b.title));
             break;
     }
-    return results;
+    urlParams.set('sortBy', sortOption);
+    history.pushState({}, '', `${path}?${urlParams}`);
+    return books;
 }
 function handleSortOption(option){
     let sortButton = document.getElementById('dropbtn');
     sortButton.innerHTML = `Sort by ${option}`;
     sortOption = option;
 }
-function flipArray(results){
-    if (results){
+function flipArray(){
+    if (books){
         asc = !asc;
-        return results.reverse();
+        if (asc) urlParams.set('order', 'asc');
+        else urlParams.set('order', 'desc');
+        history.pushState({}, '', `${path}?${urlParams}`);
+        return books.reverse();
     }
 }
