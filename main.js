@@ -1,8 +1,9 @@
 let books;
-const itemsPerPage = 10;
 let currentPage = 0;
 let sortOption = 'title';
 let asc = true;
+let itemsShown = 60;
+const itemsPerPage = 10;
 const path = window.location.href.split('?')[0];
 const urlParams = new URLSearchParams(window.location.search);
 document.addEventListener('DOMContentLoaded', function() {
@@ -39,26 +40,41 @@ async function menu(menuOption){
     }
 }
 async function loadScreen(){
-    const q = urlParams.get('q');
+    let shown = urlParams.get('shown');
+    if (shown && !isNaN(shown)){
+        if (parseInt(shown) < 1){
+            shown = 60;
+            urlParams.set('shown', shown);
+            history.pushState({}, '', `${path}?${urlParams}`);
+        } 
+        const amountOfBooks = document.getElementById("input-number-found");
+        amountOfBooks.value = itemsShown = shown;
+    }
+    let q = urlParams.get('q');
     if (q){
         let inp = document.getElementById('main-input');
         inp.value = q;
         await menu('search');
     }
-    const page = urlParams.get('p');
-    if (page){
-        currentPage = page - 1;
+    let page = urlParams.get('p');
+    if (page && !isNaN(page)){
+        if (parseInt(page) < 1){
+            currentPage = 0;
+            urlParams.set('p', currentPage + 1);
+            history.pushState({}, '', `${path}?${urlParams}`);
+        } 
+        else currentPage = page - 1;
     }
-    const sortBy = urlParams.get('sortBy');
+    let sortBy = urlParams.get('sortBy');
     if (sortBy){
-        console.log(2);
-        console.log(sortBy);
+        if(sortBy != 'author' || sortBy != 'title') sortBy = 'author';
         sortOption = sortBy.toLowerCase();
         handleSortOption(sortOption);
         await menu('sort');
     }
-    const order = urlParams.get('order');
+    let order = urlParams.get('order');
     if (order){
+        if(sortBy != 'asc' || sortBy != 'desc') sortBy = 'asc';
         if (order == 'asc'){
             asc = true;
         }
@@ -137,6 +153,7 @@ async function handleClickSearch()
         results = await getBooks(searchItem, amountOfBooks.value);
         loader.style.display = 'none';
         urlParams.set('q', searchItem);
+        urlParams.set('shown', amountOfBooks.value);
         history.pushState({}, '', `${path}?${urlParams}`);
         return results.docs;
     }
@@ -176,6 +193,7 @@ function handleSortOption(option){
     let sortButton = document.getElementById('dropbtn');
     sortButton.innerHTML = `Sort by ${option}`;
     sortOption = option;
+    menu('sort');
 }
 function flipArray(){
     if (books){
