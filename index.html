@@ -4,34 +4,36 @@
         <link rel="stylesheet" href="styles.css">
     </head>
     <body>
-        <div id="main-frame">
-            <input id="main-input" type="text" placeholder="Search">
-            <button id="remove-button" onclick="handleClickRemove()">
-                <img src="imgs/closeIcon.png">
-            </button>
-            <button id="search-button" onclick="menu('search')">
-                <img src="imgs/searchIcon.png">
-            </button>
-        </div>
-        <div id="sort">
-            <div id="number-found">
-                <p>Show results: </p>
-                <input value="60" id="input-number-found">
+        <div class="header">
+            <div id="main-frame">
+                <input id="main-input" type="text" placeholder="Search">
+                <button id="remove-button" onclick="handleClickRemove()">
+                    <img src="imgs/closeIcon.png">
+                </button>
+                <button id="search-button" onclick="menu('search')">
+                    <img src="imgs/searchIcon.png">
+                </button>
             </div>
-            <div id="sort-menu">
-                <div id="sort-buttons">
-                    <button id="up-down-sort" onclick="menu('flip')">
-                        <img src="imgs/up.png">
-                        <img src="imgs/down.png">
-                    </button>
+            <div id="sort">
+                <div id="number-found">
+                    <p>Show results: </p>
+                    <input value="60" id="input-number-found">
                 </div>
-                <div class="dropdown">
-                    <button id="dropbtn" onclick="menu('sort')">Sort by title</button>
-                    <div class="dropdown-content">
-                      <button href="#" onclick="handleSortOption('author')">Sort by author</button>
-                      <button href="#" onclick="handleSortOption('title')">Sort by title</button>
+                <div id="sort-menu">
+                    <div id="sort-buttons">
+                        <button id="up-down-sort" onclick="menu('flip')">
+                            <img src="imgs/up.png">
+                            <img src="imgs/down.png">
+                        </button>
                     </div>
-                </div>   
+                    <div class="dropdown">
+                        <button id="dropbtn" onclick="menu('sort')">Sort by title</button>
+                        <div class="dropdown-content">
+                          <button href="#" onclick="handleSortOption('author')">Sort by author</button>
+                          <button href="#" onclick="handleSortOption('title')">Sort by title</button>
+                        </div>
+                    </div>   
+                </div>
             </div>
         </div>
         <div id="loader">Loading...</div>

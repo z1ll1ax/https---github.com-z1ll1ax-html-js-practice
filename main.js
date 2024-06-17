@@ -14,7 +14,7 @@ document.addEventListener('keydown', function(event) {
         handleClickRemove();
     }
     if (event.key === "Enter"){
-        handleClickSearch();
+        menu('search');
     }
 });
 async function menu(menuOption){
