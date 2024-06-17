@@ -178,7 +178,11 @@ function emptyPage(){
 function handleSort(books){
     switch(sortOption){
         case 'author':
-            books.sort((a, b) => a.author_name[0].localeCompare(b.author_name[0]));
+            books.sort((a, b) => {
+                const authorNameA = a.author_name?.[0] || '';
+                const authorNameB = b.author_name?.[0] || '';
+                return authorNameA.localeCompare(authorNameB);
+            });
             break;
         default:
         case 'title':
