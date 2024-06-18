@@ -49,29 +49,88 @@ button:active{
     display: none;
 }
 #list{
-    margin: 40px 0 0 0;
+    margin: 0;
     font-size: 20px;
-    list-style-type: decimal;
+    list-style-type: circle;
     list-style-position: inside;
     margin-right: 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 25px;
+    column-gap: 25px;
+}
+@media(max-width: 1000px){
+    #list{
+        grid-template-columns: 1fr;
+    }
+}
+@media(min-width: 1500px){
+    #list{
+        grid-template-columns: 1fr 1fr 1fr;
+    }
 }
 #list li{
     background-color: rgb(215, 215, 245);
-    margin: 10px 20px 0 10px;
     padding: 10px;
     border: solid 5px black;
     border-radius: 15px;
     font-family: Arial;
+    display: flex;
+    justify-content: space-between;
 }
-#list .authorBook{
-    margin: 10px 10px 0 0;
-    font-size: 18px;
-    text-align: right;
+.img-book{
+    margin-left: 30px;
+    flex: 70px;
 }
-#list .titleBook{
+.img-book img{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    height: 180px;
+    width: 135px;
+}
+.text-field{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-left: 30px;
+    flex: 3;
+}
+.topic-field{
+    display: flex;
+}
+.title-author-fields{
+    flex: 1;
+}
+.topic-field button{
+    height: 40px;
+    width: 40px;
+    border: none;
+    border-radius: 20px;
+
+}
+.topic-field button img{
+    height: 30px;
+    width: 30px;
+    padding: 5.5px 12px 0 0;
+}
+
+.author-book{
     margin: 10px 10px 0 0;
-    font-size: 18px;
+    font-size: 16px;
     text-align: left;
+    bottom: 0;
+}
+.title-book{
+    margin: 10px 10px 0 0;
+    font-size: 20px;
+    text-align: left;
+    display: inline-block;
+}
+.describe-book{
+    margin: 10px 10px 0 0;
+    font-size: 16px;
+    text-align: right;
     display: inline-block;
 }
 #sort{
@@ -112,7 +171,6 @@ button:active{
 #number-found p{
     margin: 0;
 }
-
 #up-down-sort{
     margin: 0;
     height: 30px;
@@ -124,7 +182,6 @@ button:active{
 #up-down-sort img{
     height: 30px;
 }
-
 #dropbtn {
     margin: 0 15px 0 15px;
     height: 40px;
@@ -137,41 +194,34 @@ button:active{
     font-family: Arial;
     border: none;
   }
-  
-  .dropdown {
+.dropdown {
     position: relative;
     display: inline-block;
-  }
-  
-  .dropdown-content {
+}
+.dropdown-content {
     display: none;
     position: absolute;
     justify-content: center;
     background-color: #f1f1f1;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.6);
     z-index: 1;
-  }
-  
-  .dropdown-content button {
+}
+.dropdown-content button {
     color: black;
     padding: 12px 16px;
     text-decoration: none;
     width: 230px;
     display: block;
-  }
-  
-  .dropdown-content button:hover {
+}
+.dropdown-content button:hover {
     background-color: #ddd;
 }
-  
-  .dropdown:hover .dropdown-content {
+.dropdown:hover .dropdown-content {
     display: block;
 }
-  
-  .dropdown:hover .dropbtn {
+.dropdown:hover .dropbtn {
     background-color: rgb(221, 237, 255);
 }
-
 #hidden {
     clip: rect(0 0 0 0);
     clip-path: inset(50%);
@@ -190,7 +240,6 @@ button:active{
 .page-number-border, .page-number{
     flex: 1;
 }
-
 .move-page{
     width: 50px;
     height: 30px;
@@ -208,6 +257,9 @@ button:active{
 }
 #disabled{
     pointer-events: none;
+}
+.move-page#disabled{
+    background-color: rgb(244, 182, 182);
 }
 .pages-amount{
     text-align: center;

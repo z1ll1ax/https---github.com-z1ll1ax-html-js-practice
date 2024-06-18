@@ -3,7 +3,7 @@ let currentPage = 0;
 let sortOption = 'title';
 let asc = true;
 let itemsShown = 60;
-const itemsPerPage = 10;
+const itemsPerPage = 24;
 const path = window.location.href.split('?')[0];
 const urlParams = new URLSearchParams(window.location.search);
 document.addEventListener('DOMContentLoaded', function() {
@@ -105,7 +105,7 @@ function prevPage(){
     }
 }
 
-function showResults(books)
+async function showResults(books)
 {
     const searchResults = document.getElementById("list");
     const prevNextButtons = document.getElementsByClassName("move-page");
@@ -123,18 +123,56 @@ function showResults(books)
         const endIndex = startIndex + itemsPerPage;
         books.forEach((result, index) => {
             const listBook = document.createElement("li");
-            const title = document.createElement("p");
-            const author = document.createElement("p");
+            const img = document.createElement("img");
             if (index < startIndex || index >= endIndex){
                 listBook.id = 'hidden';
             }
+            img.src = `imgs/empty-book.png`;
+            img.onload = function() {
+                if (this.naturalWidth === 1 && this.naturalHeight === 1) {
+                    img.src = `imgs/empty-book.png`;
+                    img.onload = null;
+                    return;
+                } else if (result && result.isbn && result.isbn.length > 0) {
+                    img.src = `https://covers.openlibrary.org/b/isbn/${result.isbn[0]}-M.jpg`;
+                } else {
+                    img.src = `imgs/empty-book.png`;
+                }
+            };
+            img.onerror = function() {
+                img.src = `imgs/empty-book.png`;
+            }
+            const imgContainer = document.createElement("div");
+            imgContainer.className = 'img-book';
+            const textContainer = document.createElement("div");
+            textContainer.className = 'text-field';
+            const topicContainer = document.createElement("div");
+            topicContainer.className = 'topic-field';
+            const titleContainer = document.createElement("div");
+            titleContainer.className = 'title-author-fields';
+            const favButton = document.createElement("button");
+            favButton.innerHTML = '<img src="imgs/favorite.png">';
+            const title = document.createElement("p");
+            const author = document.createElement("p");
+            const description = document.createElement("p");
             listBook.className = 'newBornBook';
-            title.textContent = '\"' + result.title + '\"';
-            title.className = 'titleBook';
+            title.textContent = `${index+1}.\"` + result.title + '\"';
+            title.className = 'title-book';
             author.textContent = 'by ' + result.author_name;
-            author.className = 'authorBook';
-            listBook.appendChild(title);
-            listBook.appendChild(author);
+            author.className = 'author-book';
+            description.className = 'describe-book';
+            let descript = result.first_sentence || ['No description'];
+            if (descript[0].length >= 200) descript[0] = descript[0].substring(0, 200);
+            description.textContent = descript[0];
+            imgContainer.appendChild(img);
+            titleContainer.appendChild(title);
+            titleContainer.appendChild(author);
+            topicContainer.appendChild(titleContainer);
+            topicContainer.appendChild(favButton);
+            textContainer.appendChild(topicContainer);
+            textContainer.appendChild(description);
+            listBook.appendChild(imgContainer);
+            listBook.appendChild(textContainer);
             searchResults.appendChild(listBook);
         });
         pagination();
@@ -142,10 +180,16 @@ function showResults(books)
         let amount = Math.ceil(books.length/itemsPerPage);
         if (currentPage === amount - 1) prevNextButtons[1].id = 'disabled';
         pagesAmount[0].id = '';
-        pagesAmount[0].innerText = `${startIndex}-${endIndex} of ${books.length} total`;
+        pagesAmount[0].innerText = `${startIndex + 1}-${endIndex} of ${books.length} total`;
     }
 }
-
+async function getBooks(searchItem, numberResults)
+{
+    const apiUrlBooks = `https://openlibrary.org/search.json?q=${searchItem}&fields=title,author_name,first_sentence,isbn&limit=${numberResults}`;
+    const response = await fetch(apiUrlBooks);
+    const results = await response.json();
+    return results;
+}
 async function handleClickSearch()
 {
     const searchResults = document.getElementById("list");
@@ -172,13 +216,6 @@ async function handleClickSearch()
         history.pushState({}, '', `${path}?${urlParams}`);
         return results.docs;
     }
-}
-async function getBooks(searchItem, numberResults)
-{
-    const apiUrlBooks = `https://openlibrary.org/search.json?q=${searchItem}&fields=title,author_name&limit=${numberResults}`;
-    const response = await fetch(apiUrlBooks);
-    const results = await response.json();
-    return results;
 }
 function handleClickRemove(){
     const searchInput = document.getElementById("main-input");
@@ -230,7 +267,6 @@ function pagination(){
         button.id = '';
     }
     let amount = Math.ceil(books.length/itemsPerPage);
-    console.log(amount);
     switch(true){
         case (amount === 1):
             buttons[0].innerText = 1;
@@ -259,14 +295,14 @@ function pagination(){
                 buttons[amountOfButtons - 2].id = 'disabled';
             }
             else if (currentPage > amount - 6){
-                for (let i = 2; i < 8; i++){
+                for (let i = 2; i < amountOfButtons - 1; i++){
                     buttons[i].innerText = amount + i - 8;
                 }
                 buttons[1].innerText = '...';
                 buttons[1].id = 'disabled';
             }
             else {
-                for (let i = 2; i < 7; i++){
+                for (let i = 2; i < amountOfButtons - 2; i++){
                     buttons[i].innerText = currentPage - 3 + i;
                 }    
                 buttons[1].innerText = buttons[amountOfButtons - 2].innerText = '...';
