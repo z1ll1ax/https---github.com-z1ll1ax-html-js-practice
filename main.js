@@ -133,13 +133,14 @@ async function showResults(books)
                     img.src = `imgs/empty-book.png`;
                     img.onload = null;
                     return;
-                } else if (result && result.isbn && result.isbn.length > 0) {
+                } else if (result && result.isbn && result.isbn[0]) {
                     img.src = `https://covers.openlibrary.org/b/isbn/${result.isbn[0]}-M.jpg`;
                 } else {
                     img.src = `imgs/empty-book.png`;
                 }
             };
             img.onerror = function() {
+                img.onload = null;
                 img.src = `imgs/empty-book.png`;
             }
             const imgContainer = document.createElement("div");
@@ -158,12 +159,11 @@ async function showResults(books)
             listBook.className = 'newBornBook';
             title.textContent = `${index+1}.\"` + result.title + '\"';
             title.className = 'title-book';
-            author.textContent = 'by ' + result.author_name;
+            author.textContent = 'by ' + result.author_name;//TODO: might be a lot of authors, decrease the amount and add 'and others'
             author.className = 'author-book';
             description.className = 'describe-book';
             let descript = result.first_sentence || ['No description'];
-            if (descript[0].length >= 200) descript[0] = descript[0].substring(0, 200);
-            description.textContent = descript[0];
+            
             imgContainer.appendChild(img);
             titleContainer.appendChild(title);
             titleContainer.appendChild(author);
@@ -174,6 +174,30 @@ async function showResults(books)
             listBook.appendChild(imgContainer);
             listBook.appendChild(textContainer);
             searchResults.appendChild(listBook);
+
+            if (descript[0].length >= 200){
+                description.textContent = '';
+                description.textContent = descript[0].substring(0, 200) + '...';
+                const seeMoreObject = document.createElement("a");
+                seeMoreObject.className = 'see-more';
+                seeMoreObject.textContent = 'See more...';
+                seeMoreObject.href="#";
+                textContainer.appendChild(seeMoreObject);
+                seeMoreObject.onclick = function(event){
+                    event.preventDefault();
+                    if (seeMoreObject.className === 'see-more'){
+                        seeMoreObject.className = 'see-less';
+                        seeMoreObject.textContent = 'See less';
+                        description.textContent = result.first_sentence;
+                    }
+                    else if (seeMoreObject.className === 'see-less'){
+                        seeMoreObject.className = 'see-more';
+                        seeMoreObject.textContent = 'See more...';
+                        description.textContent = descript[0].substring(0, 200) + '...';
+                    }
+                };
+            }
+            else description.textContent = descript[0];
         });
         pagination();
         if (currentPage === 0) prevNextButtons[0].id = 'disabled';

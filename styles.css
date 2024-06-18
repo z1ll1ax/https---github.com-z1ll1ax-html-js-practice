@@ -34,11 +34,11 @@ button:active{
     font-size: 24px;
     border-color: black;
 }
-#search-button, #remove-button{
+#search-button, #remove-button, #favorites-button{
     width: 60px;
-    margin-left: 20px;
+    margin-right: 20px;
 }
-#search-button img, #remove-button img{
+#search-button img, #remove-button img, #favorites-button img{
     width: 40px;
 }
 #loader, #no-book{
@@ -130,8 +130,12 @@ button:active{
 .describe-book{
     margin: 10px 10px 0 0;
     font-size: 16px;
-    text-align: right;
+    text-align: center;
     display: inline-block;
+}
+.see-more, .see-less{
+    font-size: 16px;
+    text-align: center;
 }
 #sort{
     margin: 20px;
