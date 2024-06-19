@@ -237,7 +237,7 @@ button:active{
   white-space: nowrap;
   width: 1px;
 }
-#page-menu{
+#page-movement{
   display: flex;
   margin-top: 30px;
   align-items: center;

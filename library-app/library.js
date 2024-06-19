@@ -100,10 +100,9 @@ async function showResults(books)
     emptyPage();
     prevNextButtons[0].id = prevNextButtons[1].id = '';
     if (!books || books.length === 0){
+        emptyPage();
         const noBook = document.getElementById("no-book");
         noBook.style.display = 'block';
-        prevNextButtons[0].id = prevNextButtons[1].id = pagesAmount[0].id = 'hidden';
-        pagination();
     }
     else{
         const startIndex = currentPage * itemsPerPage;
@@ -147,9 +146,13 @@ async function showResults(books)
             heartPict.src = "imgs/favorite.png";
             favButton.appendChild(heartPict);
             for (let i = 0; i < localStorage.length; i++){
-                console.log(localStorage.key(i));
-                if (localStorage.key(i) == result.isbn[0]) heartPict.src = 'imgs/favorite-choosed.png';
-                else heartPict.src = "imgs/favorite.png";
+                if (result.isbn && localStorage.key(i) == result.isbn[0]){
+                    heartPict.src = 'imgs/favorite-choosed.png';
+                    break;
+                } 
+                else{
+                    heartPict.src = "imgs/favorite.png";
+                } 
             }
             favButton.addEventListener('click', () => {
                 if (heartPict.src.includes("imgs/favorite.png")) {
@@ -237,23 +240,37 @@ async function showResults(books)
 }
 function makeFavorite(isbn){
     localStorage.setItem(isbn, true);
-    console.log(localStorage.length - 1);
 }
 function unmakeFavorite(isbn){
     localStorage.removeItem(isbn);
-    console.log(localStorage.length - 1);
 }
-function seeFavorite(){
+async function seeFavorite(){
+    const loader = document.getElementById("loader");
+    emptyPage();
+    loader.style.display = 'block';
+    books = await getFavoriteBooks();
+    loader.style.display = 'none';
+    urlParams.set('favorite', true);
+    showResults(books);
+    history.replaceState({}, '', `${path}?${urlParams}`);
+}
+async function getFavoriteBooks()
+{
+    let results = [];
     for (let i = 0; i < localStorage.length; i++){
-        console.log(localStorage.key(i) + ' ' + localStorage.getItem(localStorage.key(i)));
+        const apiUrlBook = `https://openlibrary.org/search.json?q=${localStorage.key(i)}&fields=title,author_name,first_sentence,isbn`;
+        const response = await fetch(apiUrlBook);
+        const result = await response.json();
+        results.push(result.docs[0]);
     }
+    return results;
 }
 async function getBooks(searchItem, numberResults)
 {
     const apiUrlBooks = `https://openlibrary.org/search.json?q=${searchItem}&fields=title,author_name,first_sentence,isbn&limit=${numberResults}`;
     const response = await fetch(apiUrlBooks);
     const results = await response.json();
-    return results;
+    return results.docs;
 }
 async function handleClickSearch()
 {
@@ -273,13 +290,13 @@ async function handleClickSearch()
         loader.style.display = 'block';
         if(amountOfBooks.value <= 0){
             amountOfBooks.value = 10;
-        } 
+        }
         results = await getBooks(searchItem, amountOfBooks.value);
         loader.style.display = 'none';
         urlParams.set('q', searchItem);
         urlParams.set('total', amountOfBooks.value);
         history.pushState({}, '', `${path}?${urlParams}`);
-        return results.docs;
+        return results;
     }
 }
 function handleClickRemove(){
@@ -289,8 +306,10 @@ function handleClickRemove(){
 function emptyPage(){
     const searchResults = document.getElementById("list");
     const noBook = document.getElementById("no-book");
+    const pageMenu = document.getElementById("page-menu");
     searchResults.innerHTML='';
     noBook.style.display = 'none';
+    pageMenu.style.display = 'none';
 }
 function handleSort(){
     if (books){
@@ -329,6 +348,8 @@ function flipArray(){
     return books.reverse();    
 }    
 function pagination(){
+    const pageMenu = document.getElementById("page-menu");
+    pageMenu.style.display = 'inline';
     if (!books || books.length === 0){
         return;
     }
