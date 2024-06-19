@@ -1,4 +1,4 @@
-let books;
+let books = null;
 let currentPage = 0;
 let sortOption = 'title';
 let asc = true;
@@ -14,30 +14,18 @@ document.addEventListener('keydown', function(event) {
         handleClickRemove();
     }
     if (event.key === "Enter"){
-        menu('search');
+        search();
     }
 });
-async function menu(menuOption){
-    switch(menuOption){
-        case 'search':
-            books = await handleClickSearch();
-            showResults(books);
-            break;
-        case 'sort':
-            books = await(handleSort(books));
-            showResults(books);
-            break;
-        case 'flip':
-            books = flipArray(books);
-            showResults(books);
-            break; 
-        case 'nextPage':
-            nextPage(books);
-            break;
-        case 'prevPage':
-            prevPage(books);
-            break;  
-    }
+async function search(){
+    books = await handleClickSearch();
+    showResults(books);
+}
+function sortBooks(){
+    showResults(handleSort());
+}
+function flip(){
+    showResults(flipArray());
 }
 async function loadScreen(){
     let shown = urlParams.get('total');
@@ -67,14 +55,14 @@ async function loadScreen(){
     if (q){
         let inp = document.getElementById('main-input');
         inp.value = q;
-        await menu('search');
+        await search();
     }
     let sortBy = urlParams.get('sortBy');
     if (sortBy){
         if(sortBy != 'author' || sortBy != 'title') sortBy = 'author';
         sortOption = sortBy.toLowerCase();
         handleSortOption(sortOption);
-        await menu('sort');
+        await sortBooks();
     }
     let order = urlParams.get('order');
     if (order){
@@ -84,13 +72,13 @@ async function loadScreen(){
         }
         else{
             asc = false;
-            menu('flip');
+            flip();
         }
     } 
 }
 function nextPage(){
     if (books && currentPage != Math.ceil(books.length/itemsPerPage) - 1) {
-        ++currentPage
+        ++currentPage;
         showResults(books);
         urlParams.set('p', currentPage + 1);
         history.pushState({}, '', `${path}?${urlParams}`);
@@ -104,7 +92,6 @@ function prevPage(){
         history.pushState({}, '', `${path}?${urlParams}`);
     }
 }
-
 async function showResults(books)
 {
     const searchResults = document.getElementById("list");
@@ -112,7 +99,7 @@ async function showResults(books)
     const pagesAmount = document.getElementsByClassName("pages-amount");
     emptyPage();
     prevNextButtons[0].id = prevNextButtons[1].id = '';
-    if (books.length === 0){
+    if (!books || books.length === 0){
         const noBook = document.getElementById("no-book");
         noBook.style.display = 'block';
         prevNextButtons[0].id = prevNextButtons[1].id = pagesAmount[0].id = 'hidden';
@@ -123,6 +110,7 @@ async function showResults(books)
         const endIndex = startIndex + itemsPerPage;
         books.forEach((result, index) => {
             const listBook = document.createElement("li");
+            listBook.className = 'newBornBook';
             const img = document.createElement("img");
             if (index < startIndex || index >= endIndex){
                 listBook.id = 'hidden';
@@ -151,48 +139,88 @@ async function showResults(books)
             topicContainer.className = 'topic-field';
             const titleContainer = document.createElement("div");
             titleContainer.className = 'title-author-fields';
+            const descriptContainer = document.createElement("div");
+            descriptContainer.className = 'description-fields';
             const favButton = document.createElement("button");
-            favButton.innerHTML = '<img src="imgs/favorite.png">';
+            //
+            const heartPict = document.createElement("img");
+            heartPict.src = "imgs/favorite.png";
+            favButton.appendChild(heartPict);
+            for (let i = 0; i < localStorage.length; i++){
+                console.log(localStorage.key(i));
+                if (localStorage.key(i) == result.isbn[0]) heartPict.src = 'imgs/favorite-choosed.png';
+                else heartPict.src = "imgs/favorite.png";
+            }
+            favButton.addEventListener('click', () => {
+                if (heartPict.src.includes("imgs/favorite.png")) {
+                    heartPict.src = 'imgs/favorite-choosed.png';
+                    makeFavorite(result.isbn[0]);
+                }
+                else {
+                    heartPict.src = 'imgs/favorite.png';
+                    unmakeFavorite(result.isbn[0]);
+                }
+            });
+            //
             const title = document.createElement("p");
-            const author = document.createElement("p");
-            const description = document.createElement("p");
-            listBook.className = 'newBornBook';
-            title.textContent = `${index+1}.\"` + result.title + '\"';
             title.className = 'title-book';
-            author.textContent = 'by ' + result.author_name;//TODO: might be a lot of authors, decrease the amount and add 'and others'
+            const author = document.createElement("p");
             author.className = 'author-book';
+            const description = document.createElement("p");
             description.className = 'describe-book';
-            let descript = result.first_sentence || ['No description'];
-            
+            title.textContent = `${index+1}.\"` + result.title + '\"';
             imgContainer.appendChild(img);
             titleContainer.appendChild(title);
             titleContainer.appendChild(author);
             topicContainer.appendChild(titleContainer);
             topicContainer.appendChild(favButton);
+            descriptContainer.appendChild(description);
             textContainer.appendChild(topicContainer);
-            textContainer.appendChild(description);
+            textContainer.appendChild(descriptContainer);
             listBook.appendChild(imgContainer);
             listBook.appendChild(textContainer);
             searchResults.appendChild(listBook);
-
+            if (result.author_name && result.author_name.length > 3){
+                author.textContent = 'by ' + result.author_name.slice(0, 3) + ' and others...';
+                const seeMoreAuthors = document.createElement("a");
+                seeMoreAuthors.className = 'see-more';
+                seeMoreAuthors.textContent = 'See more...';
+                seeMoreAuthors.href="#";
+                titleContainer.appendChild(seeMoreAuthors);
+                seeMoreAuthors.onclick = function(event){
+                    event.preventDefault();
+                    if (seeMoreAuthors.className === 'see-more'){
+                        seeMoreAuthors.className = 'see-less';
+                        seeMoreAuthors.textContent = 'See less';
+                        author.textContent = 'by ' + result.author_name;
+                    }
+                    else if (seeMoreAuthors.className === 'see-less'){
+                        seeMoreAuthors.className = 'see-more';
+                        seeMoreAuthors.textContent = 'See more...';
+                        author.textContent = 'by ' + result.author_name.slice(0, 3) + ' and others...';
+                    }
+                };
+            }
+            else author.textContent = 'by ' + result.author_name;
+            let descript = result.first_sentence || ['No description'];
             if (descript[0].length >= 200){
                 description.textContent = '';
                 description.textContent = descript[0].substring(0, 200) + '...';
-                const seeMoreObject = document.createElement("a");
-                seeMoreObject.className = 'see-more';
-                seeMoreObject.textContent = 'See more...';
-                seeMoreObject.href="#";
-                textContainer.appendChild(seeMoreObject);
-                seeMoreObject.onclick = function(event){
+                const seeMoreDescript = document.createElement("a");
+                seeMoreDescript.className = 'see-more';
+                seeMoreDescript.textContent = 'See more...';
+                seeMoreDescript.href="#";
+                descriptContainer.appendChild(seeMoreDescript);
+                seeMoreDescript.onclick = function(event){
                     event.preventDefault();
-                    if (seeMoreObject.className === 'see-more'){
-                        seeMoreObject.className = 'see-less';
-                        seeMoreObject.textContent = 'See less';
+                    if (seeMoreDescript.className === 'see-more'){
+                        seeMoreDescript.className = 'see-less';
+                        seeMoreDescript.textContent = 'See less';
                         description.textContent = result.first_sentence;
                     }
-                    else if (seeMoreObject.className === 'see-less'){
-                        seeMoreObject.className = 'see-more';
-                        seeMoreObject.textContent = 'See more...';
+                    else if (seeMoreDescript.className === 'see-less'){
+                        seeMoreDescript.className = 'see-more';
+                        seeMoreDescript.textContent = 'See more...';
                         description.textContent = descript[0].substring(0, 200) + '...';
                     }
                 };
@@ -205,6 +233,19 @@ async function showResults(books)
         if (currentPage === amount - 1) prevNextButtons[1].id = 'disabled';
         pagesAmount[0].id = '';
         pagesAmount[0].innerText = `${startIndex + 1}-${endIndex} of ${books.length} total`;
+    }
+}
+function makeFavorite(isbn){
+    localStorage.setItem(isbn, true);
+    console.log(localStorage.length - 1);
+}
+function unmakeFavorite(isbn){
+    localStorage.removeItem(isbn);
+    console.log(localStorage.length - 1);
+}
+function seeFavorite(){
+    for (let i = 0; i < localStorage.length; i++){
+        console.log(localStorage.key(i) + ' ' + localStorage.getItem(localStorage.key(i)));
     }
 }
 async function getBooks(searchItem, numberResults)
@@ -251,40 +292,46 @@ function emptyPage(){
     searchResults.innerHTML='';
     noBook.style.display = 'none';
 }
-function handleSort(books){
-    switch(sortOption){
-        case 'author':
-            books.sort((a, b) => {
-                const authorNameA = a.author_name?.[0] || '';
-                const authorNameB = b.author_name?.[0] || '';
-                return authorNameA.localeCompare(authorNameB);
-            });
-            break;
-        default:
-        case 'title':
-            books.sort((a, b) => a.title.localeCompare(b.title));
-            break;
+function handleSort(){
+    if (books){
+        switch(sortOption){
+            case 'author':
+                books.sort((a, b) => {
+                    const authorNameA = a.author_name?.[0] || '';
+                    const authorNameB = b.author_name?.[0] || '';
+                    return authorNameA.localeCompare(authorNameB);
+                });
+                break;
+            default:
+            case 'title':
+                books.sort((a, b) => a.title.localeCompare(b.title));
+                break;
+        }
+        urlParams.set('sortBy', sortOption);
+        history.pushState({}, '', `${path}?${urlParams}`);
     }
-    urlParams.set('sortBy', sortOption);
-    history.pushState({}, '', `${path}?${urlParams}`);
     return books;
 }
 function handleSortOption(option){
     let sortButton = document.getElementById('dropbtn');
     sortButton.innerHTML = `Sort by ${option}`;
     sortOption = option;
-    menu('sort');
+    sortBooks();
 }
 function flipArray(){
-    if (books){
-        asc = !asc;
-        if (asc) urlParams.set('order', 'asc');
-        else urlParams.set('order', 'desc');
-        history.pushState({}, '', `${path}?${urlParams}`);
-        return books.reverse();
+    if (!books || books.length === 0){
+        return;
     }
-}
+    asc = !asc;
+    if (asc) urlParams.set('order', 'asc');
+    else urlParams.set('order', 'desc');
+    history.pushState({}, '', `${path}?${urlParams}`);
+    return books.reverse();    
+}    
 function pagination(){
+    if (!books || books.length === 0){
+        return;
+    }
     const amountOfButtons = 9;
     const buttons = document.getElementsByClassName('page-number');
     for (const button of buttons){

@@ -96,6 +96,9 @@ button:active{
     margin-left: 30px;
     flex: 3;
 }
+.description-fields{
+    text-align: center;
+}
 .topic-field{
     display: flex;
 }
