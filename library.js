@@ -141,7 +141,6 @@ async function showResults(books)
             const descriptContainer = document.createElement("div");
             descriptContainer.className = 'description-fields';
             const favButton = document.createElement("button");
-            //
             const heartPict = document.createElement("img");
             heartPict.src = "imgs/favorite.png";
             favButton.appendChild(heartPict);
@@ -164,7 +163,6 @@ async function showResults(books)
                     unmakeFavorite(result.isbn[0]);
                 }
             });
-            //
             const title = document.createElement("p");
             title.className = 'title-book';
             const author = document.createElement("p");
@@ -250,8 +248,8 @@ async function seeFavorite(){
     loader.style.display = 'block';
     books = await getFavoriteBooks();
     loader.style.display = 'none';
-    urlParams.set('favorite', true);
     showResults(books);
+    urlParams.set('favorite', true);
     history.replaceState({}, '', `${path}?${urlParams}`);
 }
 async function getFavoriteBooks()
