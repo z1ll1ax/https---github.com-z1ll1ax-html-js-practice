@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" href="imgs/logo.png"/>
     <link rel="stylesheet" href="style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Library</title>
@@ -10,14 +10,14 @@
   <body>
     <div class="header">
         <div id="main-frame">
-          <button id="favorites-button" onclick="seeFavorite()">
+          <button id="favorites-button">
             <img src="imgs/favorite-choosed.png">
           </button>
           <input id="main-input" type="text" placeholder="Search">
-          <button id="remove-button" onclick="handleClickRemove()">
+          <button id="remove-button">
             <img src="imgs/closeIcon.png">
           </button>
-          <button id="search-button" onclick="search()">
+          <button id="search-button">
             <img src="imgs/searchIcon.png">
           </button>
         </div>
@@ -28,16 +28,16 @@
           </div>
           <div id="sort-menu">
             <div id="sort-buttons">
-              <button id="up-down-sort" onclick="flip()">
+              <button id="up-down-sort">
                 <img src="imgs/up.png">
                 <img src="imgs/down.png">
               </button>
             </div>
             <div class="dropdown">
-              <button id="dropbtn" onclick="sortBooks()">Sort by title</button>
+              <button id="dropbtn">Sort by title</button>
                 <div class="dropdown-content">
-                  <button href="#" onclick="handleSortOption('author')">Sort by author</button>
-                  <button href="#" onclick="handleSortOption('title')">Sort by title</button>
+                  <button href="#">Sort by author</button>
+                  <button href="#">Sort by title</button>
                 </div>
               </div>   
             </div>
@@ -48,22 +48,22 @@
         <ul id="list"></ul>
         <div id="page-menu">
             <div id="page-movement">
-                <button class="move-page" id="hidden" onclick="prevPage()">Prev</button>
+                <button class="move-page" id="hidden">Prev</button>
                 <div id="page-buttons">
-                    <button class="page-number" id="hidden" onclick="pageTravelTo(0)">1</button>
-                    <button class="page-number" id="hidden" onclick="pageTravelTo(1)">2</button>
-                    <button class="page-number" id="hidden" onclick="pageTravelTo(2)">3</button>
-                    <button class="page-number" id="hidden" onclick="pageTravelTo(3)">4</button>
-                    <button class="page-number" id="hidden" onclick="pageTravelTo(4)">5</button>  
-                    <button class="page-number" id="hidden" onclick="pageTravelTo(5)">6</button>  
-                    <button class="page-number" id="hidden" onclick="pageTravelTo(6)">7</button>    
-                    <button class="page-number" id="hidden" onclick="pageTravelTo(7)">8</button>
-                    <button class="page-number" id="hidden" onclick="pageTravelTo(8)">10</button>
+                    <button class="page-number" id="hidden">1</button>
+                    <button class="page-number" id="hidden">2</button>
+                    <button class="page-number" id="hidden">3</button>
+                    <button class="page-number" id="hidden">4</button>
+                    <button class="page-number" id="hidden">5</button>  
+                    <button class="page-number" id="hidden">6</button>  
+                    <button class="page-number" id="hidden">7</button>    
+                    <button class="page-number" id="hidden">8</button>
+                    <button class="page-number" id="hidden">10</button>
                 </div>
-                <button class="move-page" id="hidden" onclick="nextPage()">Next</button>
+                <button class="move-page" id="hidden">Next</button>
             </div>
             <p class="pages-amount"></p>
         </div>
-    <script src="library.js"></script>
+    <script type="module" src="main.js"></script>
   </body>
 </html>

@@ -6,17 +6,7 @@ let itemsShown = 60;
 const itemsPerPage = 24;
 const path = window.location.href.split('?')[0];
 const urlParams = new URLSearchParams(window.location.search);
-document.addEventListener('DOMContentLoaded', function() {
-    loadScreen();
-});
-document.addEventListener('keydown', function(event) {
-    if (event.key === "Escape") {
-        handleClickRemove();
-    }
-    if (event.key === "Enter"){
-        search();
-    }
-});
+
 async function search(){
     books = await handleClickSearch();
     showResults(books);
@@ -107,6 +97,7 @@ async function showResults(books)
     else{
         const startIndex = currentPage * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
+        let lastindex;
         books.forEach((result, index) => {
             const listBook = document.createElement("li");
             listBook.className = 'newBornBook';
@@ -227,13 +218,14 @@ async function showResults(books)
                 };
             }
             else description.textContent = descript[0];
+            lastindex = index;
         });
         pagination();
         if (currentPage === 0) prevNextButtons[0].id = 'disabled';
         let amount = Math.ceil(books.length/itemsPerPage);
         if (currentPage === amount - 1) prevNextButtons[1].id = 'disabled';
         pagesAmount[0].id = '';
-        pagesAmount[0].innerText = `${startIndex + 1}-${endIndex} of ${books.length} total`;
+        pagesAmount[0].innerText = `${startIndex + 1}-${lastindex + 1} of ${books.length} total`;
     }
 }
 function makeFavorite(isbn){
@@ -249,8 +241,8 @@ async function seeFavorite(){
     books = await getFavoriteBooks();
     loader.style.display = 'none';
     showResults(books);
-    urlParams.set('favorite', true);
-    history.replaceState({}, '', `${path}?${urlParams}`);
+    // urlParams.set('favorite', true);
+    // history.replaceState({}, '', `${path}?${urlParams}`);
 }
 async function getFavoriteBooks()
 {
@@ -289,7 +281,7 @@ async function handleClickSearch()
         if(amountOfBooks.value <= 0){
             amountOfBooks.value = 10;
         }
-        results = await getBooks(searchItem, amountOfBooks.value);
+        let results = await getBooks(searchItem, amountOfBooks.value);
         loader.style.display = 'none';
         urlParams.set('q', searchItem);
         urlParams.set('total', amountOfBooks.value);
@@ -405,7 +397,7 @@ function pagination(){
             }
             return;
     }
-    for (button of buttons){
+    for (let button of buttons){
         if (button.innerText == currentPage + 1){
             button.id = 'active';
             break;
@@ -418,4 +410,16 @@ function pageTravelTo(id){
     urlParams.set('p', currentPage + 1);
     history.pushState({}, '', `${path}?${urlParams}`);
     showResults(books);
+}
+export {
+    search,
+    sortBooks,
+    flip,
+    loadScreen,
+    nextPage,
+    prevPage,
+    seeFavorite,
+    handleClickRemove,
+    handleSortOption,
+    pageTravelTo
 }
