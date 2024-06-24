@@ -2,68 +2,70 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="imgs/logo.png"/>
-    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="imgs/logo.png" />
+    <link rel="stylesheet" href="style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Library</title>
   </head>
   <body>
     <div class="header">
-        <div id="main-frame">
-          <button id="favorites-button">
-            <img src="imgs/favorite-choosed.png">
-          </button>
-          <input id="main-input" type="text" placeholder="Search">
-          <button id="remove-button">
-            <img src="imgs/closeIcon.png">
-          </button>
-          <button id="search-button">
-            <img src="imgs/searchIcon.png">
-          </button>
+      <div id="main-frame">
+        <button id="favorites-button">
+          <img src="imgs/favorite-choosed.png" />
+        </button>
+        <input id="main-input" type="text" placeholder="Search" />
+        <button id="remove-button">
+          <img src="imgs/closeIcon.png" />
+        </button>
+        <button id="search-button">
+          <img src="imgs/searchIcon.png" />
+        </button>
+      </div>
+      <div id="sort">
+        <div id="number-found">
+          <p>Show results:</p>
+          <input value="60" id="input-number-found" />
         </div>
-        <div id="sort">
-          <div id="number-found">
-            <p>Show results: </p>
-            <input value="60" id="input-number-found">
+        <div id="sort-menu">
+          <div id="sort-buttons">
+            <button id="up-down-sort">
+              <img src="imgs/up.png" />
+              <img src="imgs/down.png" />
+            </button>
           </div>
-          <div id="sort-menu">
-            <div id="sort-buttons">
-              <button id="up-down-sort">
-                <img src="imgs/up.png">
-                <img src="imgs/down.png">
-              </button>
-            </div>
-            <div class="dropdown">
-              <button id="dropbtn">Sort by title</button>
-                <div class="dropdown-content">
-                  <button href="#">Sort by author</button>
-                  <button href="#">Sort by title</button>
-                </div>
-              </div>   
+          <div class="dropdown">
+            <button id="dropbtn">Sort by title</button>
+            <div class="dropdown-content">
+              <button id="sort-author" href="#">Sort by author</button>
+              <button id="sort-title" href="#">Sort by title</button>
             </div>
           </div>
         </div>
-        <div id="loader">Loading...</div>
-        <div id="no-book" style="display: none;">There is no such book</div>
-        <ul id="list"></ul>
-        <div id="page-menu">
-            <div id="page-movement">
-                <button class="move-page" id="hidden">Prev</button>
-                <div id="page-buttons">
-                    <button class="page-number" id="hidden">1</button>
-                    <button class="page-number" id="hidden">2</button>
-                    <button class="page-number" id="hidden">3</button>
-                    <button class="page-number" id="hidden">4</button>
-                    <button class="page-number" id="hidden">5</button>  
-                    <button class="page-number" id="hidden">6</button>  
-                    <button class="page-number" id="hidden">7</button>    
-                    <button class="page-number" id="hidden">8</button>
-                    <button class="page-number" id="hidden">10</button>
-                </div>
-                <button class="move-page" id="hidden">Next</button>
-            </div>
-            <p class="pages-amount"></p>
+      </div>
+    </div>
+    <div id="loader">Loading...</div>
+    <div id="no-book" style="display: none">There is no such book</div>
+    <div id="main-content">
+      <ul id="list"></ul>
+      <div id="page-menu">
+        <div id="page-movement">
+          <button class="move-page" id="hidden">Prev</button>
+          <div id="page-buttons">
+            <button class="page-number" id="hidden"></button>
+            <button class="page-number" id="hidden"></button>
+            <button class="page-number" id="hidden"></button>
+            <button class="page-number" id="hidden"></button>
+            <button class="page-number" id="hidden"></button>
+            <button class="page-number" id="hidden"></button>
+            <button class="page-number" id="hidden"></button>
+            <button class="page-number" id="hidden"></button>
+            <button class="page-number" id="hidden"></button>
+          </div>
+          <button class="move-page" id="hidden">Next</button>
         </div>
+        <p class="pages-amount"></p>
+      </div>
+    </div>
     <script type="module" src="main.js"></script>
   </body>
 </html>
