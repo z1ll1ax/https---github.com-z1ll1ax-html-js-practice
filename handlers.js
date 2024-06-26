@@ -1,114 +1,124 @@
-import { Library } from "./library.js";
-import { Sort } from "./sort.js";
-import { render, loading } from "./render.js";
-import { urlSetParam, urlGetParam, urlClear } from "./urlParams.js";
+import { Library } from "./Library.js";
+import { configureBookPage, loading } from "./render.js";
+import { url } from "./url.js";
 const library = new Library();
-const sort = new Sort();
 async function loadScreen() {
-  let page = urlGetParam("p");
+  let page = url.urlGetParam("p");
   if (!page || isNaN(page) || parseInt(page) < 1) {
-    urlSetParam("p", 1);
+    url.urlSetParam("p", 1);
   }
-  let fav = urlGetParam("favorite");
+  let fav = url.urlGetParam("favorite");
   if (fav) {
     await handleClickFavorite();
   }
-  let q = urlGetParam("q");
+  let q = url.urlGetParam("q");
   if (q) {
     let searchInput = document.getElementById("main-input");
     searchInput.value = q;
     await handleClickSearch();
   }
-  let sortBy = urlGetParam("sortBy");
+  let sortBy = url.urlGetParam("sortBy");
   if (sortBy) {
-    if (sortBy != "author" || sortBy != "title") sortBy = "title";
+    if (sortBy !== "author" || sortBy !== "title") sortBy = "title";
     handleClickSortOption(sortBy);
   }
-  let order = urlGetParam("order");
+  let order = url.urlGetParam("order");
   if (order) {
-    if (sortBy != "asc" || sortBy != "desc") sortBy = "asc";
-    if (order == "asc") {
+    if (sortBy !== "asc" || sortBy !== "desc") sortBy = "asc";
+    if (order === "asc") {
     } else {
       flip();
     }
   }
 }
-async function getBooks(url) {
-  const response = await fetch(url);
+async function getBooks(bookUrl) {
+  const response = await fetch(bookUrl);
   const books = await response.json();
   return books;
 }
 function nextPage() {
   const books = library.getBooks();
   const itemsPerPage = library.getAmountPerPage();
-  const currentPage = parseInt(urlGetParam("p"));
-  if (books && currentPage != Math.ceil(books.length / itemsPerPage)) {
-    urlSetParam("p", currentPage + 1);
-    render(books, itemsPerPage);
+  const currentPage = parseInt(url.urlGetParam("p"));
+  if (books && currentPage !== Math.ceil(books.length / itemsPerPage)) {
+    url.urlSetParam("p", currentPage + 1);
+    configureBookPage(books, itemsPerPage, currentPage);
   }
 }
 function prevPage() {
   const books = library.getBooks();
-  const currentPage = parseInt(urlGetParam("p"));
-  if (books && currentPage != 0) {
-    urlSetParam("p", parseInt(currentPage) - 1);
-    render(books, library.getAmountPerPage());
+  const currentPage = parseInt(url.urlGetParam("p"));
+  if (books && currentPage !== 0) {
+    url.urlSetParam("p", parseInt(currentPage) - 1);
+    configureBookPage(books, library.getAmountPerPage(), currentPage);
   }
 }
 function pageTravelTo(id) {
   const buttons = document.getElementsByClassName("page-number");
-  urlSetParam("p", buttons[id].innerText);
-  render(library.getBooks(), library.getAmountPerPage());
+  url.urlSetParam("p", buttons[id].innerText);
+  configureBookPage(
+    library.getBooks(),
+    library.getAmountPerPage(),
+    url.urlGetParam("p"),
+  );
 }
 async function handleClickSearch() {
   const searchInput = document.getElementById("main-input");
   const amountInput = document.getElementById("input-number-found");
   if (searchInput.value.trim() === "") {
     searchInput.style.borderColor = "red";
-    urlSetParam("q", "");
+    url.urlSetParam("q", "");
     return;
   }
   if (amountInput.value <= 0) {
     amountInput.value = 10;
   }
   searchInput.style.borderColor = "black";
-  const url = `https://openlibrary.org/search.json?q=${searchInput.value}&fields=title,author_name,first_sentence,isbn&limit=${amountInput.value}`;
+  const bookUrl = `https://openlibrary.org/search.json?q=${searchInput.value}&fields=title,author_name,first_sentence,isbn&limit=${amountInput.value}`;
   loading("on");
-  let response = await getBooks(url);
+  let response = await getBooks(bookUrl);
   library.setBooks(response.docs);
   loading("off");
-  let curPage = urlGetParam("p");
-  urlClear();
-  urlSetParam("q", searchInput.value);
+  let curPage = url.urlGetParam("p");
+  url.urlClear();
+  url.urlSetParam("q", searchInput.value);
   if (
     curPage <= Math.ceil(library.getBooks().length / library.getAmountPerPage())
   ) {
-    urlSetParam("p", curPage);
+    url.urlSetParam("p", curPage);
   } else {
-    urlSetParam(
+    url.urlSetParam(
       "p",
       Math.ceil(library.getBooks().length / library.getAmountPerPage()),
     );
   }
-  render(library.getBooks(), library.getAmountPerPage());
+  configureBookPage(
+    library.getBooks(),
+    library.getAmountPerPage(),
+    url.urlGetParam("p"),
+  );
 }
 
 async function handleClickFavorite() {
   let results = [];
   loading("on");
   for (let i = 0; i < localStorage.length; i++) {
-    const url = `https://openlibrary.org/search.json?q=${localStorage.key(i)}&fields=title,author_name,first_sentence,isbn`;
-    let response = await getBooks(url);
+    const bookUrl = `https://openlibrary.org/search.json?q=${localStorage.key(i)}&fields=title,author_name,first_sentence,isbn`;
+    let response = await getBooks(bookUrl);
     results.push(response.docs[0]);
   }
   library.setBooks(results);
   loading("off");
   //change url
-  urlClear();
-  urlSetParam("favorite", true);
-  urlSetParam("p", 1);
-  //render
-  render(library.getBooks(), library.getAmountPerPage());
+  url.urlClear();
+  url.urlSetParam("favorite", true);
+  url.urlSetParam("p", 1);
+  //configureBookPage
+  configureBookPage(
+    library.getBooks(),
+    library.getAmountPerPage(),
+    url.urlGetParam("p"),
+  );
 }
 function handleClickRemove() {
   const searchInput = document.getElementById("main-input");
@@ -119,7 +129,11 @@ function handleClickSort() {
   if (!books || books.length === 0) {
     return;
   }
-  switch (sort.getOption()) {
+  let order = url.urlGetParam("order");
+  if (order === "desc") {
+    url.urlSetParam("order", "asc");
+  }
+  switch (url.urlGetParam("sortBy")) {
     case "author":
       books.sort((a, b) => {
         const authorNameA = a.author_name?.[0] || "";
@@ -132,13 +146,17 @@ function handleClickSort() {
       books.sort((a, b) => a.title.localeCompare(b.title));
       break;
   }
-  urlSetParam("sortBy", sort.getOption());
-  render(library.getBooks(), library.getAmountPerPage());
+  url.urlSetParam("sortBy", url.urlGetParam("sortBy"));
+  configureBookPage(
+    library.getBooks(),
+    library.getAmountPerPage(),
+    url.urlGetParam("p"),
+  );
 }
 function handleClickSortOption(option) {
-  sort.setOption(option);
+  url.urlSetParam("sortBy", option);
   const but = document.getElementById("dropbtn");
-  but.innerText = "Sort by " + sort.getOption();
+  but.innerText = "Sort by " + url.urlGetParam("sortBy");
   handleClickSort();
 }
 function handleClickFlip() {
@@ -147,7 +165,21 @@ function handleClickFlip() {
     return;
   }
   library.setBooks(books.reverse());
-  render(library.getBooks(), library.getAmountPerPage());
+  let order = url.urlGetParam("order");
+  switch (order) {
+    case "desc":
+      url.urlSetParam("order", "asc");
+      break;
+    default:
+    case "asc":
+      url.urlSetParam("order", "desc");
+      break;
+  }
+  configureBookPage(
+    library.getBooks(),
+    library.getAmountPerPage(),
+    url.urlGetParam("p"),
+  );
 }
 export {
   handleClickSearch,
